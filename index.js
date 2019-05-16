@@ -19,7 +19,10 @@ const DEFAULT_DOM_CONTAINER_ID = 'render';
 
 const Popup = new function()
 {
-  this.DEName   = "Popups";
+  DE.Events.Emitter.call( this );
+  this.trigger = this.emit;
+
+  this.DEName   = "Popup";
   this.popups   = {};
   this.nPopups  = 0;
   this.el       = null;
@@ -152,7 +155,8 @@ const Popup = new function()
             // in this case, closes is the sound
             if ( closes )
               DE.Audio.fx.play( closes );
-            callbacks.call( contexts );
+            if ( callbacks )
+              callbacks.call( contexts );
             _self.remove( popup.id );
             return false;
           } );
