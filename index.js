@@ -17,7 +17,7 @@ const TEMPLATE = `
 
 const DEFAULT_DOM_CONTAINER_ID = 'render';
 
-const Popup = new function()
+const Popup = function()
 {
   DE.Events.Emitter.call( this );
   this.trigger = this.emit;
@@ -188,4 +188,5 @@ const Popup = new function()
 Popup.prototype = Object.create( DE.Events.Emitter.prototype );
 Popup.prototype.constructor = Popup;
 
-export default Popup;
+const popup = new Popup();
+export default popup;
