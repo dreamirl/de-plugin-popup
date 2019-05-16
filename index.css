@@ -1,0 +1,97 @@
+/* v0.1.0 */
+/* Popup */
+@-webkit-keyframes de-plugin-popup
+{
+  from {-webkit-transform: scale(0);}
+  to {-webkit-transform: scale(1);}
+}
+@keyframes de-plugin-popup
+{
+  from {transform: scale(0);}
+  to {transform: scale(1);}
+}
+@-moz-keyframes de-plugin-popup
+{
+  from {-moz-transform: scale(0);}
+  to {-moz-transform: scale(1);}
+}
+.de-plugin-popup {
+  width : auto;
+  height: auto;
+  left  : 0;
+  right : 0;
+  bottom: 0;
+  top   : 0;
+  box-sizing       : border-box;
+  position         : absolute;
+  padding          : 10px 20px;
+  padding-bottom   : 50px;
+  background       : none;
+  background-image : url( 'img/popup.png' );
+  background-repeat: no-repeat;
+  background-size  : 100% 100%;
+  -webkit-animation : de-plugin-popup 0.2s;
+      -moz-animation : de-plugin-popup 0.2s;
+          animation : de-plugin-popup 0.2s;
+  overflow: auto;
+}
+
+.de-plugin-popup .buttonsPrompt, .de-plugin-popup .buttonsDefault {
+  position  : absolute;
+  bottom    : 15px;
+  left      : 0;
+  right     : 0;
+  text-align: center;
+}
+.de-plugin-popup button {
+  border          : none;
+  padding         : 10px 40px;
+  background      : none;
+  background-image : url( 'img/button.png' );
+  background-repeat: no-repeat;
+  background-size  : 300% 100%;
+  background-position: 0 0;
+  font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+.de-plugin-popup button:hover {
+  background-position: 50% 0;
+}
+.de-plugin-popup button:active {
+  background-position: 100% 0;
+}
+.de-plugin-popup .buttonsCustom {
+  text-align: center;
+}
+.de-plugin-popup .buttonsCustom button {
+  margin: 0 14%;
+}
+.de-plugin-popup h1, .de-plugin-popup h2, .de-plugin-popup h3, .de-plugin-popup h4, .de-plugin-popup h5 {
+  text-align  : center;
+  font-family :'Helvetica Neue',Helvetica,Arial,sans-serif;
+  margin-top  : 0;
+}
+
+@media screen and (min-width: 550px) and (min-height: 350px) {
+  .de-plugin-popup {
+    top          : 50%;
+    left         : 50%;
+    right        : auto;
+    bottom       : auto;
+    width        : 540px;
+    height       : 310px;
+    margin-left  : -270px;
+    margin-top   : -150px;
+  }
+  .de-plugin-popup button {
+    padding : 10px 30px;
+  }
+}
+
+@media screen and (max-width: 550px) and (min-height: 440px) {
+  .de-plugin-popup {
+    top       : 50%;
+    bottom    : auto;
+    height    : 400px;
+    margin-top: -200px;
+  }
+}
