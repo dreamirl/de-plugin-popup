@@ -49,6 +49,7 @@ const Popup = function()
 
     domContainer.appendChild( this.el );
     this.inited = true;
+    this.el.style.display = 'none';
   }
   
   /****
@@ -164,7 +165,8 @@ const Popup = function()
       }
       
     this.el.appendChild( popup );
-    
+    this.el.style.display = 'block';
+
     this.popups[ popup.id ] = popup;
     ++this.nPopups;
     
@@ -181,6 +183,7 @@ const Popup = function()
 
     if ( --this.nPopups == 0 ) {
       this.trigger( "zeroPopups" );
+      this.el.style.display = 'none';
     }
   }
 };
