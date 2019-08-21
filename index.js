@@ -5,8 +5,15 @@ const TEMPLATE = `
 <div>
   <p class="content"></p>
   <div class="buttonsPrompt">
-    <button class="yesPrompt">Yes</button>
     <button class="noPrompt">No</button>
+    <button class="yesPrompt">Yes</button>
+  </div>
+  <div class="inputTextfield">
+    <input type="text" class="valueTextfield" maxLength="4" autofocus>
+  </div>
+  <div class="buttonsTextfield">
+    <button class="cancelTextfield">Cancel</button>
+    <button class="okTextfield">Ok</button>
   </div>
   <div class="buttonsDefault">
     <button class="okBtn">Ok</button>
@@ -69,6 +76,8 @@ const Popup = function()
       popup.getElementsByClassName( 'content' )[ 0 ].innerHTML = text;
       
       popup.getElementsByClassName( 'buttonsPrompt' )[ 0 ].style.display = "none";
+      popup.getElementsByClassName( 'inputTextfield' )[ 0 ].style.display = "none";
+      popup.getElementsByClassName( 'buttonsTextfield' )[ 0 ].style.display = "none";
       popup.getElementsByClassName( 'buttonsCustom' )[ 0 ].style.display = "none";
       popup.id = 'popup' + id;
       popup.className = 'de-plugin-popup';
@@ -143,6 +152,51 @@ const Popup = function()
             } );
             buttons.appendChild( b );
           }
+          break;
+
+        // generate a text field with cancel/ok buttons
+        case "textfield":
+            if ( contexts && !contexts.ok )
+              contexts = { ok: contexts, cancel: contexts };
+            if ( !contexts )
+              contexts = { ok: window, cancel: window };
+              
+            popup.getElementsByClassName( 'buttonsDefault' )[ 0 ].style.display = "none";
+            popup.getElementsByClassName( 'inputTextfield' )[ 0 ].style.display = "block";
+            popup.getElementsByClassName( 'buttonsTextfield' )[ 0 ].style.display = "block";
+
+            setTimeout( () => {
+              popup.getElementsByClassName( 'valueTextfield' )[ 0 ].focus();
+            }, 250);
+
+            var cancel = popup.getElementsByClassName( 'cancelTextfield' )[ 0 ];
+            cancel.innerHTML = DE.Localization.get( "cancel" ) || "cancel";
+            cancel.addEventListener( 'pointerup'
+            , function( e )
+            {
+              e.stopPropagation();
+              e.preventDefault();
+              if ( callbacks.sound )
+                DE.Audio.fx.play( callbacks.sound );
+              if ( callbacks.cancel )
+                callbacks.cancel.call( contexts.cancel );
+              _self.remove( popup.id );
+              return false;
+            } );
+            var ok = popup.getElementsByClassName( 'okTextfield' )[ 0 ];
+            ok.innerHTML = DE.Localization.get( "ok" ) || "ok";
+            ok.addEventListener( 'pointerup'
+            , function( e )
+            {
+              e.stopPropagation();
+              e.preventDefault();
+              if ( callbacks.sound )
+                DE.Audio.fx.play( callbacks.sound );
+              if ( callbacks.ok )
+                callbacks.ok.call( contexts.ok, popup.getElementsByClassName( 'valueTextfield' )[ 0 ].value );
+              _self.remove( popup.id );
+              return false;
+            } );
           break;
         
         default: // default is information with button ok
