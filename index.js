@@ -239,6 +239,7 @@ const Popup = function()
       this.trigger( "zeroPopups" );
       this.el.style.display = 'none';
     }
+    delete this.popups[id];
   }
 };
 
