@@ -241,6 +241,13 @@ const Popup = function()
     }
     delete this.popups[id];
   }
+
+  this.removeAll = function()
+  {
+    for (var i in this.popups) {
+      this.remove(i);
+    }
+  }
 };
 
 Popup.prototype = Object.create( DE.Events.Emitter.prototype );
