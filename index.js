@@ -2,7 +2,6 @@ import DE from '@dreamirl/dreamengine';
 import './index.css';
 
 const TEMPLATE = `
-<div>
   <p class="content"></p>
   <div class="buttonsPrompt">
     <button class="noPrompt">No</button>
@@ -20,7 +19,7 @@ const TEMPLATE = `
   </div>
   <div class="buttonsCustom">
   </div>
-</div>`;
+`;
 
 const DEFAULT_DOM_CONTAINER_ID = 'render';
 
