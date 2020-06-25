@@ -35,6 +35,13 @@ const Popup = function()
   this.template = null;
   this.inited   = false;
   var _self = this;
+
+  this.defaultSounds = {
+    yes: undefined,
+    no: undefined,
+    ok: undefined,
+    default: undefined
+  };
   
   this.init = function( params )
   {
@@ -96,8 +103,8 @@ const Popup = function()
           {
             e.stopPropagation();
             e.preventDefault();
-            if ( callbacks.sound )
-              DE.Audio.fx.play( callbacks.sound );
+            if ( callbacks.sound_yes || callbacks.sound || _self.defaultSounds.yes || _self.defaultSounds.default )
+              DE.Audio.fx.play( callbacks.sound_yes || callbacks.sound || _self.defaultSounds.yes|| _self.defaultSounds.default );
             if ( callbacks.yes )
               callbacks.yes.call( contexts.yes );
             _self.remove( popup.id );
@@ -110,8 +117,8 @@ const Popup = function()
           {
             e.stopPropagation();
             e.preventDefault();
-            if ( callbacks.sound )
-              DE.Audio.fx.play( callbacks.sound );
+            if ( callbacks.sound_no || callbacks.sound || _self.defaultSounds.no || _self.defaultSounds.default )
+              DE.Audio.fx.play( callbacks.sound_no || callbacks.sound || _self.defaultSounds.no || _self.defaultSounds.default );
             if ( callbacks.no )
               callbacks.no.call( contexts.no );
             _self.remove( popup.id );
@@ -142,8 +149,8 @@ const Popup = function()
               var target = e.target;
               while( target.tagName.toLowerCase() != "button" )
                 target = target.parentElement;
-              if ( callbacks.sound )
-                DE.Audio.fx.play( callbacks.sound );
+              if ( callbacks.sound || _self.defaultSounds.default )
+                DE.Audio.fx.play( callbacks.sound || _self.defaultSounds.default );
               callbacks[ target.i ].call( contexts, e );
               if ( closes.indexOf( target.i ) != -1 )
                 _self.remove( popup.id );
@@ -175,8 +182,8 @@ const Popup = function()
             {
               e.stopPropagation();
               e.preventDefault();
-              if ( callbacks.sound )
-                DE.Audio.fx.play( callbacks.sound );
+              if ( callbacks.sound || _self.defaultSounds.no || _self.defaultSounds.default )
+                DE.Audio.fx.play( callbacks.sound || _self.defaultSounds.no || _self.defaultSounds.default );
               if ( callbacks.cancel )
                 callbacks.cancel.call( contexts.cancel );
               _self.remove( popup.id );
@@ -189,8 +196,8 @@ const Popup = function()
             {
               e.stopPropagation();
               e.preventDefault();
-              if ( callbacks.sound )
-                DE.Audio.fx.play( callbacks.sound );
+              if ( callbacks.sound || _self.defaultSounds.ok || _self.defaultSounds.default )
+                DE.Audio.fx.play( callbacks.sound || _self.defaultSounds.ok || _self.defaultSounds.default );
               if ( callbacks.ok )
                 callbacks.ok.call( contexts.ok, popup.getElementsByClassName( 'valueTextfield' )[ 0 ].value );
               _self.remove( popup.id );
@@ -207,8 +214,8 @@ const Popup = function()
             e.stopPropagation();
             e.preventDefault();
             // in this case, closes is the sound
-            if ( closes )
-              DE.Audio.fx.play( closes );
+            if ( closes || _self.defaultSounds.ok || _self.defaultSounds.default )
+              DE.Audio.fx.play( closes || _self.defaultSounds.ok || _self.defaultSounds.default );
             if ( callbacks )
               callbacks.call( contexts );
             _self.remove( popup.id );
