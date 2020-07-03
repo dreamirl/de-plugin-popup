@@ -98,7 +98,11 @@ const Popup = function()
         popup.getElementsByClassName('buttonsDefault')[ 0 ].style.display = "none";
         popup.getElementsByClassName('buttonsPrompt')[ 0 ].style.display = "block";
         var yes = popup.getElementsByClassName('yesPrompt')[ 0 ];
-        yes.innerHTML = DE.Localization.get('popup.yes') || DE.Localization.get('yes') || 'Yes';
+        var dicoY = DE.Localization.get('popup.yes');
+        if (dicoY == 'popup.yes') {
+          dicoY = DE.Localization.get('yes');
+        }
+        yes.innerHTML = dicoY === 'yes' ? 'Yes' : dicoY;
         yes.addEventListener('pointerup'
           , function( e )
           {
@@ -117,7 +121,11 @@ const Popup = function()
             return false;
           } );
         var no = popup.getElementsByClassName('noPrompt')[ 0 ];
-        no.innerHTML = DE.Localization.get('popup.no') || DE.Localization.get('no') || 'No';
+        var dicoN = DE.Localization.get('popup.no');
+        if (dicoN == 'popup.no') {
+          dicoN = DE.Localization.get('no');
+        }
+        no.innerHTML = dicoN === 'no' ? 'No' : dicoN;
         no.addEventListener('pointerup'
           , function( e )
           {
@@ -151,7 +159,7 @@ const Popup = function()
           b = document.createElement( "button" );
           b.className = i;
           b.i = i;
-          b.innerHTML = DE.Localization.get( i ) || i;
+          b.innerHTML = DE.Localization.get( i );
           b.addEventListener('pointerup'
           , function( e )
           {
@@ -187,7 +195,7 @@ const Popup = function()
           }, 250);
 
           var cancel = popup.getElementsByClassName('cancelTextfield')[ 0 ];
-          cancel.innerHTML = DE.Localization.get('cancel') || "cancel";
+          cancel.innerHTML = DE.Localization.get('cancel');
           cancel.addEventListener('pointerup'
           , function( e )
           {
@@ -201,7 +209,11 @@ const Popup = function()
             return false;
           } );
           var ok = popup.getElementsByClassName('okTextfield')[ 0 ];
-          ok.innerHTML = DE.Localization.get('popup.ok') || DE.Localization.get('ok') || "ok";
+          var dico = DE.Localization.get('popup.ok');
+          if (dico == 'popup.ok') {
+            dico = DE.Localization.get('ok');
+          }
+          ok.innerHTML = dico === 'ok' ? 'Ok' : dico;
           ok.addEventListener('pointerup'
           , function( e )
           {
@@ -221,7 +233,7 @@ const Popup = function()
           contexts = window;
         
         var okBtn = popup.getElementsByClassName('okBtn')[ 0 ];
-        okBtn.innerHTML = DE.Localization.get('ok') || "ok";
+        okBtn.innerHTML = DE.Localization.get('ok');
         okBtn.addEventListener('pointerup'
         , function( e )
         {
