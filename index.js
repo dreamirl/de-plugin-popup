@@ -8,7 +8,7 @@ const TEMPLATE = `
     <button class="yesPrompt">Yes</button>
   </div>
   <div class="inputTextfield">
-    <input type="text" class="valueTextfield" maxLength="4" autofocus>
+    <input type="text" class="valueTextfield" autofocus>
   </div>
   <div class="buttonsTextfield">
     <button class="cancelTextfield">Cancel</button>
@@ -202,6 +202,7 @@ const Popup = function() {
           'block';
         popup.getElementsByClassName('buttonsTextfield')[0].style.display =
           'block';
+        popup.getElementsByClassName('valueTextfield')[0].setAttribute('maxlength', callbacks.maxlength || 20);
 
         setTimeout(() => {
           popup.getElementsByClassName('valueTextfield')[0].focus();
