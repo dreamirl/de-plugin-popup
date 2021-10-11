@@ -256,6 +256,73 @@ const Popup = function() {
         });
         break;
 
+        case 'textfield-password':
+          if (contexts && !contexts.ok)
+            contexts = { ok: contexts, cancel: contexts };
+          if (!contexts) contexts = { ok: window, cancel: window };
+  
+          popup.getElementsByClassName('buttonsDefault')[0].style.display =
+            'none';
+          popup.getElementsByClassName('inputTextfield')[0].style.display =
+            'block';
+          popup.getElementsByClassName('buttonsTextfield')[0].style.display =
+            'block';
+          popup.getElementsByClassName('valueTextfield')[0].setAttribute('maxlength', callbacks.maxlength || 20);
+          popup.getElementsByClassName('valueTextfield')[0].setAttribute('type', "password");
+          popup.getElementsByClassName('inputTextfield')[0].innerHTML += `<button onclick="const password = document.querySelector('.valueTextfield');password.setAttribute('type', password.getAttribute('type') === 'password' ? 'text' : 'password');"
+          id="togglePassword"  cursor: pointer;">Voir</button>`
+          setTimeout(() => {
+            popup.getElementsByClassName('valueTextfield')[0].focus();
+          }, 250);
+  
+          var cancel = popup.getElementsByClassName('cancelTextfield')[0];
+          cancel.innerHTML = DE.Localization.get('cancel');
+          cancel.addEventListener('pointerup', function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            if (
+              callbacks.sound ||
+              _self.defaultSounds.no ||
+              _self.defaultSounds.default
+            )
+              DE.Audio.fx.play(
+                callbacks.sound ||
+                  _self.defaultSounds.no ||
+                  _self.defaultSounds.default,
+              );
+            if (callbacks.cancel) callbacks.cancel.call(contexts.cancel);
+            _self.remove(popup.id);
+            return false;
+          });
+          var ok = popup.getElementsByClassName('okTextfield')[0];
+          var dico = DE.Localization.get('popup.ok');
+          if (dico == 'popup.ok') {
+            dico = DE.Localization.get('ok');
+          }
+          ok.innerHTML = dico === 'ok' ? 'Ok' : dico;
+          ok.addEventListener('pointerup', function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            if (
+              callbacks.sound ||
+              _self.defaultSounds.ok ||
+              _self.defaultSounds.default
+            )
+              DE.Audio.fx.play(
+                callbacks.sound ||
+                  _self.defaultSounds.ok ||
+                  _self.defaultSounds.default,
+              );
+            if (callbacks.ok)
+              callbacks.ok.call(
+                contexts.ok,
+                popup.getElementsByClassName('valueTextfield')[0].value,
+              );
+            _self.remove(popup.id);
+            return false;
+          });
+          break;
+
       default:
         // default is information with button ok
         if (!contexts) contexts = window;
