@@ -3,6 +3,9 @@ import './index.css';
 
 const TEMPLATE = `
   <p class="content"></p>
+  <p class="content-2"></p>
+  <p class="styling-utility-1"></p>
+  <p class="styling-utility-2"></p>
   <div class="buttonsPrompt">
     <button class="noPrompt">No</button>
     <button class="yesPrompt">Yes</button>
@@ -345,7 +348,7 @@ const Popup = function() {
     }
 
     this.el.appendChild(popup);
-    this.el.style.display = 'block';
+    this.el.style.display = 'flex';
 
     this.popups[popup.id] = popup;
     ++this.nPopups;

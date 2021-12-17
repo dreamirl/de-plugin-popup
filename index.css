@@ -24,15 +24,23 @@
     -moz-transform: scale(1);
   }
 }
-.de-plugin-popup {
-  width: auto;
-  height: auto;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: 0;
-  box-sizing: border-box;
+
+#de-plugin-popups-container {
+  background: rgba(10, 10, 10, 0.95);
+  width: 100%;
+  height: 100%;
   position: absolute;
+  pointer-events: all;
+  top: 0;
+  left: 0;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+}
+
+#de-plugin-popups-container .de-plugin-popup {
+  box-sizing: border-box;
+  position: relative;
   padding: 10px 20px;
   padding-bottom: 50px;
   background: none;
@@ -43,62 +51,71 @@
   -moz-animation: de-plugin-popup 0.2s;
   animation: de-plugin-popup 0.2s;
   overflow: auto;
+  margin: auto;
 }
 
-.de-plugin-popup .inputTextfield {
+#de-plugin-popups-container .de-plugin-popup>* {
+  position: relative;
+  z-index: 1;
+}
+
+#de-plugin-popups-container .de-plugin-popup>.content-2,
+#de-plugin-popups-container .de-plugin-popup>.styling-utility-1,
+#de-plugin-popups-container .de-plugin-popup>.styling-utility-2 {
+  display: none;
+  z-index: 0;
+}
+
+#de-plugin-popups-container .de-plugin-popup .inputTextfield {
   left: 0;
   right: 0;
   text-align: center;
 }
 
-.de-plugin-popup .valueTextfield {
+#de-plugin-popups-container .de-plugin-popup .valueTextfield {
   left: 0;
   right: 0;
   text-align: center;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-.de-plugin-popup .buttonsPrompt,
-.de-plugin-popup .buttonsTextfield,
-.de-plugin-popup .buttonsDefault {
-  position: absolute;
-  bottom: 15px;
-  left: 0;
-  right: 0;
+#de-plugin-popups-container .de-plugin-popup .buttonsPrompt,
+#de-plugin-popups-container .de-plugin-popup .buttonsTextfield,
+#de-plugin-popups-container .de-plugin-popup .buttonsDefault {
   text-align: center;
 }
-.de-plugin-popup button {
+#de-plugin-popups-container .de-plugin-popup button {
   border: none;
   outline: none;
   padding: 10px 40px;
   background: none;
-  background-image: url('img/button.png');
+  /*background-image: url('img/button.png');
   background-repeat: no-repeat;
   background-size: 300% 100%;
   background-position: 0 0;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; */
 }
-.de-plugin-popup button:hover {
+#de-plugin-popups-container .de-plugin-popup button:hover {
   background-position: 50% 0;
   border: none;
   outline: none;
 }
-.de-plugin-popup button:active {
+#de-plugin-popups-container .de-plugin-popup button:active {
   background-position: 100% 0;
   border: none;
   outline: none;
 }
-.de-plugin-popup .buttonsCustom {
+#de-plugin-popups-container .de-plugin-popup .buttonsCustom {
   text-align: center;
 }
-.de-plugin-popup .buttonsCustom button {
+#de-plugin-popups-container .de-plugin-popup .buttonsCustom button {
   margin: 0 14%;
 }
-.de-plugin-popup h1,
-.de-plugin-popup h2,
-.de-plugin-popup h3,
-.de-plugin-popup h4,
-.de-plugin-popup h5 {
+#de-plugin-popups-container .de-plugin-popup h1,
+#de-plugin-popups-container .de-plugin-popup h2,
+#de-plugin-popups-container .de-plugin-popup h3,
+#de-plugin-popups-container .de-plugin-popup h4,
+#de-plugin-popups-container .de-plugin-popup h5 {
   text-align: center;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   margin-top: 0;
@@ -106,14 +123,14 @@
 
 @media screen and (min-width: 550px) and (min-height: 350px) {
   .de-plugin-popup {
-    top: 50%;
+    /* top: 50%;
     left: 50%;
     right: auto;
     bottom: auto;
     width: 540px;
-    height: 310px;
+    height: 320px;
     margin-left: -270px;
-    margin-top: -150px;
+    margin-top: -160px; */
   }
   .de-plugin-popup button {
     padding: 10px 30px;
@@ -122,9 +139,9 @@
 
 @media screen and (max-width: 550px) and (min-height: 440px) {
   .de-plugin-popup {
-    top: 50%;
+    /* top: 50%;
     bottom: auto;
     height: 400px;
-    margin-top: -200px;
+    margin-top: -200px; */
   }
 }
