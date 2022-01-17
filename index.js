@@ -68,6 +68,16 @@ const Popup = function() {
     domContainer.appendChild(this.el);
     this.inited = true;
     this.el.style.display = 'none';
+
+    this.el.addEventListener("keyup", event => {
+      if (event.isComposing || event.keyCode === 229) {
+        return;
+      }
+
+      if (event.key === "Escape") {
+        this.removeAll();
+      }
+    });
   };
 
   /****
