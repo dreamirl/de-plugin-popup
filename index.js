@@ -57,8 +57,8 @@ const Popup = function() {
     if (!domContainer) {
       throw new Error(
         "FATAL ERROR: Can't init Popups without an element -- " +
-          'selector:: ' +
-          params.containerId,
+        'selector:: ' +
+        params.containerId,
       );
     }
 
@@ -73,9 +73,9 @@ const Popup = function() {
   /****
    * create a popup in the windw, fill to window with js detection
    text is the content, type = prompt || info
-    if you use prompt type, callbacks and contexts args are objects with yes and no values
-    if you use info (default), callbacks and contexts args are directly functions
-    */
+   if you use prompt type, callbacks and contexts args are objects with yes and no values
+   if you use info (default), callbacks and contexts args are directly functions
+   */
   this.create = function(text, type, callbacks, contexts, closes) {
     if (!this.inited) return;
 
@@ -110,7 +110,7 @@ const Popup = function() {
         yes.innerHTML = dicoY === 'yes' ? 'Yes' : dicoY;
         yes.addEventListener('pointerup', function(e) {
           e.stopPropagation();
-          e.preventDefault();
+          e.stopPropagation();
           if (
             callbacks.sound_yes ||
             callbacks.sound ||
@@ -119,9 +119,9 @@ const Popup = function() {
           )
             DE.Audio.fx.play(
               callbacks.sound_yes ||
-                callbacks.sound ||
-                _self.defaultSounds.yes ||
-                _self.defaultSounds.default,
+              callbacks.sound ||
+              _self.defaultSounds.yes ||
+              _self.defaultSounds.default,
             );
           if (callbacks.yes) {
             if (contexts.yes) {
@@ -140,8 +140,8 @@ const Popup = function() {
         }
         no.innerHTML = dicoN === 'no' ? 'No' : dicoN;
         closeCallback = function(e) {
-          e.stopPropagation();
-          e.preventDefault();
+          if (e !== undefined) e.stopPropagation();
+          if (e !== undefined) e.preventDefault();
           if (
             callbacks.sound_no ||
             callbacks.sound ||
@@ -150,9 +150,9 @@ const Popup = function() {
           )
             DE.Audio.fx.play(
               callbacks.sound_no ||
-                callbacks.sound ||
-                _self.defaultSounds.no ||
-                _self.defaultSounds.default,
+              callbacks.sound ||
+              _self.defaultSounds.no ||
+              _self.defaultSounds.default,
             );
           if (callbacks.no) {
             if (contexts.no) {
@@ -168,7 +168,7 @@ const Popup = function() {
         break;
 
       // generate a button list
-      case 'custom':
+      case 'custom': // TODO: add closeCallback
         popup.getElementsByClassName('buttonsDefault')[0].style.display =
           'none';
         var buttons = popup.getElementsByClassName('buttonsCustom')[0];
@@ -181,8 +181,8 @@ const Popup = function() {
           b.i = i;
           b.innerHTML = DE.Localization.get(i);
           const bCallback = function(e) {
-            e.stopPropagation();
-            e.preventDefault();
+            if (e !== undefined) e.stopPropagation();
+            if (e !== undefined) e.preventDefault();
             var target = e.target;
             while (target.tagName.toLowerCase() != 'button')
               target = target.parentElement;
@@ -220,8 +220,8 @@ const Popup = function() {
         var cancel = popup.getElementsByClassName('cancelTextfield')[0];
         cancel.innerHTML = DE.Localization.get('cancel');
         closeCallback = function(e) {
-          e.stopPropagation();
-          e.preventDefault();
+          if (e !== undefined) e.stopPropagation();
+          if (e !== undefined) e.preventDefault();
           if (
             callbacks.sound ||
             _self.defaultSounds.no ||
@@ -229,8 +229,8 @@ const Popup = function() {
           )
             DE.Audio.fx.play(
               callbacks.sound ||
-                _self.defaultSounds.no ||
-                _self.defaultSounds.default,
+              _self.defaultSounds.no ||
+              _self.defaultSounds.default,
             );
           if (callbacks.cancel) callbacks.cancel.call(contexts.cancel);
           _self.remove(popup.id);
@@ -246,7 +246,7 @@ const Popup = function() {
         ok.innerHTML = dico === 'ok' ? 'Ok' : dico;
         ok.addEventListener('pointerup', function(e) {
           e.stopPropagation();
-          e.preventDefault();
+          e.stopPropagation();
           if (
             callbacks.sound ||
             _self.defaultSounds.ok ||
@@ -254,8 +254,8 @@ const Popup = function() {
           )
             DE.Audio.fx.play(
               callbacks.sound ||
-                _self.defaultSounds.ok ||
-                _self.defaultSounds.default,
+              _self.defaultSounds.ok ||
+              _self.defaultSounds.default,
             );
           if (callbacks.ok)
             callbacks.ok.call(
@@ -267,20 +267,20 @@ const Popup = function() {
         });
         break;
 
-        case 'textfield-password':
-          if (contexts && !contexts.ok)
-            contexts = { ok: contexts, cancel: contexts };
-          if (!contexts) contexts = { ok: window, cancel: window };
-  
-          popup.getElementsByClassName('buttonsDefault')[0].style.display =
-            'none';
-          popup.getElementsByClassName('inputTextfield')[0].style.display =
-            'block';
-          popup.getElementsByClassName('buttonsTextfield')[0].style.display =
-            'block';
-          popup.getElementsByClassName('valueTextfield')[0].setAttribute('maxlength', callbacks.maxlength || 20);
-          popup.getElementsByClassName('valueTextfield')[0].setAttribute('type', "password");
-          popup.getElementsByClassName('inputTextfield')[0].innerHTML += `<button onclick="const password = document.querySelector('.valueTextfield');password.setAttribute('type', password.getAttribute('type') === 'password' ? 'text' : 'password');"
+      case 'textfield-password':
+        if (contexts && !contexts.ok)
+          contexts = { ok: contexts, cancel: contexts };
+        if (!contexts) contexts = { ok: window, cancel: window };
+
+        popup.getElementsByClassName('buttonsDefault')[0].style.display =
+          'none';
+        popup.getElementsByClassName('inputTextfield')[0].style.display =
+          'block';
+        popup.getElementsByClassName('buttonsTextfield')[0].style.display =
+          'block';
+        popup.getElementsByClassName('valueTextfield')[0].setAttribute('maxlength', callbacks.maxlength || 20);
+        popup.getElementsByClassName('valueTextfield')[0].setAttribute('type', "password");
+        popup.getElementsByClassName('inputTextfield')[0].innerHTML += `<button onclick="const password = document.querySelector('.valueTextfield');password.setAttribute('type', password.getAttribute('type') === 'password' ? 'text' : 'password');"
           id="togglePassword"  cursor: pointer;">Voir</button>`
         setTimeout(() => {
           popup.getElementsByClassName('valueTextfield')[0].focus();
@@ -289,8 +289,8 @@ const Popup = function() {
         var cancel = popup.getElementsByClassName('cancelTextfield')[0];
         cancel.innerHTML = DE.Localization.get('cancel');
         closeCallback = function(e) {
-          e.stopPropagation();
-          e.preventDefault();
+          if (e !== undefined) e.stopPropagation();
+          if (e !== undefined) e.preventDefault();
           if (
             callbacks.sound ||
             _self.defaultSounds.no ||
@@ -343,8 +343,8 @@ const Popup = function() {
         var okBtn = popup.getElementsByClassName('okBtn')[0];
         okBtn.innerHTML = DE.Localization.get('ok');
         closeCallback = function(e) {
-          e.stopPropagation();
-          e.preventDefault();
+          if (e !== undefined) e.stopPropagation();
+          if (e !== undefined) e.preventDefault();
           // in this case, closes is the sound
           if (closes || _self.defaultSounds.ok || _self.defaultSounds.default)
             DE.Audio.fx.play(
@@ -366,6 +366,10 @@ const Popup = function() {
       if (event.key == "Escape") {
         if (closeCallback !== undefined) closeCallback(event);
       }
+    });
+
+    DE.Inputs.on('keyUp', 'back', function() {
+      if (closeCallback !== undefined) closeCallback();
     });
 
     this.el.appendChild(popup);
