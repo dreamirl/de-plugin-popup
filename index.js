@@ -68,16 +68,6 @@ const Popup = function() {
     domContainer.appendChild(this.el);
     this.inited = true;
     this.el.style.display = 'none';
-
-    this.el.addEventListener("keyup", event => {
-      if (event.isComposing || event.keyCode === 229) {
-        return;
-      }
-
-      if (event.key === "Escape") {
-        this.removeAll();
-      }
-    });
   };
 
   /****
@@ -100,6 +90,8 @@ const Popup = function() {
     popup.getElementsByClassName('buttonsCustom')[0].style.display = 'none';
     popup.id = 'popup' + id;
     popup.className = 'de-plugin-popup';
+
+    let closeCallback;
 
     switch (type) {
       case 'prompt':
@@ -147,7 +139,7 @@ const Popup = function() {
           dicoN = DE.Localization.get('no');
         }
         no.innerHTML = dicoN === 'no' ? 'No' : dicoN;
-        no.addEventListener('pointerup', function(e) {
+        closeCallback = function(e) {
           e.stopPropagation();
           e.preventDefault();
           if (
@@ -171,7 +163,8 @@ const Popup = function() {
           }
           _self.remove(popup.id);
           return false;
-        });
+        };
+        no.addEventListener('pointerup', closeCallback);
         break;
 
       // generate a button list
@@ -182,12 +175,12 @@ const Popup = function() {
         buttons.style.display = 'block';
         while (buttons.firstChild) buttons.removeChild(buttons.firstChild);
         for (var i in callbacks) {
-          if (i == 'sound') continue;
+          if (i == 'sound' || i == 'closeCallbackElName') continue;
           b = document.createElement('button');
           b.className = i;
           b.i = i;
           b.innerHTML = DE.Localization.get(i);
-          b.addEventListener('pointerup', function(e) {
+          const bCallback = function(e) {
             e.stopPropagation();
             e.preventDefault();
             var target = e.target;
@@ -198,7 +191,10 @@ const Popup = function() {
             callbacks[target.i].call(contexts, e);
             if (closes.indexOf(target.i) != -1) _self.remove(popup.id);
             return false;
-          });
+          };
+          if (i === callbacks.closeCallbackElName) closeCallback = bCallback;
+          b.addEventListener('pointerup', bCallback);
+
           buttons.appendChild(b);
         }
         break;
@@ -223,7 +219,7 @@ const Popup = function() {
 
         var cancel = popup.getElementsByClassName('cancelTextfield')[0];
         cancel.innerHTML = DE.Localization.get('cancel');
-        cancel.addEventListener('pointerup', function(e) {
+        closeCallback = function(e) {
           e.stopPropagation();
           e.preventDefault();
           if (
@@ -239,7 +235,9 @@ const Popup = function() {
           if (callbacks.cancel) callbacks.cancel.call(contexts.cancel);
           _self.remove(popup.id);
           return false;
-        });
+        };
+        cancel.addEventListener('pointerup', closeCallback);
+
         var ok = popup.getElementsByClassName('okTextfield')[0];
         var dico = DE.Localization.get('popup.ok');
         if (dico == 'popup.ok') {
@@ -284,57 +282,59 @@ const Popup = function() {
           popup.getElementsByClassName('valueTextfield')[0].setAttribute('type', "password");
           popup.getElementsByClassName('inputTextfield')[0].innerHTML += `<button onclick="const password = document.querySelector('.valueTextfield');password.setAttribute('type', password.getAttribute('type') === 'password' ? 'text' : 'password');"
           id="togglePassword"  cursor: pointer;">Voir</button>`
-          setTimeout(() => {
-            popup.getElementsByClassName('valueTextfield')[0].focus();
-          }, 250);
-  
-          var cancel = popup.getElementsByClassName('cancelTextfield')[0];
-          cancel.innerHTML = DE.Localization.get('cancel');
-          cancel.addEventListener('pointerup', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            if (
+        setTimeout(() => {
+          popup.getElementsByClassName('valueTextfield')[0].focus();
+        }, 250);
+
+        var cancel = popup.getElementsByClassName('cancelTextfield')[0];
+        cancel.innerHTML = DE.Localization.get('cancel');
+        closeCallback = function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          if (
+            callbacks.sound ||
+            _self.defaultSounds.no ||
+            _self.defaultSounds.default
+          )
+            DE.Audio.fx.play(
               callbacks.sound ||
               _self.defaultSounds.no ||
-              _self.defaultSounds.default
-            )
-              DE.Audio.fx.play(
-                callbacks.sound ||
-                  _self.defaultSounds.no ||
-                  _self.defaultSounds.default,
-              );
-            if (callbacks.cancel) callbacks.cancel.call(contexts.cancel);
-            _self.remove(popup.id);
-            return false;
-          });
-          var ok = popup.getElementsByClassName('okTextfield')[0];
-          var dico = DE.Localization.get('popup.ok');
-          if (dico == 'popup.ok') {
-            dico = DE.Localization.get('ok');
-          }
-          ok.innerHTML = dico === 'ok' ? 'Ok' : dico;
-          ok.addEventListener('pointerup', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            if (
+              _self.defaultSounds.default,
+            );
+          if (callbacks.cancel) callbacks.cancel.call(contexts.cancel);
+          _self.remove(popup.id);
+          return false;
+        };
+        cancel.addEventListener('pointerup', closeCallback);
+
+        var ok = popup.getElementsByClassName('okTextfield')[0];
+        var dico = DE.Localization.get('popup.ok');
+        if (dico == 'popup.ok') {
+          dico = DE.Localization.get('ok');
+        }
+        ok.innerHTML = dico === 'ok' ? 'Ok' : dico;
+        ok.addEventListener('pointerup', function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          if (
+            callbacks.sound ||
+            _self.defaultSounds.ok ||
+            _self.defaultSounds.default
+          )
+            DE.Audio.fx.play(
               callbacks.sound ||
               _self.defaultSounds.ok ||
-              _self.defaultSounds.default
-            )
-              DE.Audio.fx.play(
-                callbacks.sound ||
-                  _self.defaultSounds.ok ||
-                  _self.defaultSounds.default,
-              );
-            if (callbacks.ok)
-              callbacks.ok.call(
-                contexts.ok,
-                popup.getElementsByClassName('valueTextfield')[0].value,
-              );
-            _self.remove(popup.id);
-            return false;
-          });
-          break;
+              _self.defaultSounds.default,
+            );
+          if (callbacks.ok)
+            callbacks.ok.call(
+              contexts.ok,
+              popup.getElementsByClassName('valueTextfield')[0].value,
+            );
+          _self.remove(popup.id);
+          return false;
+        });
+        break;
 
       default:
         // default is information with button ok
@@ -342,7 +342,7 @@ const Popup = function() {
 
         var okBtn = popup.getElementsByClassName('okBtn')[0];
         okBtn.innerHTML = DE.Localization.get('ok');
-        okBtn.addEventListener('pointerup', function(e) {
+        closeCallback = function(e) {
           e.stopPropagation();
           e.preventDefault();
           // in this case, closes is the sound
@@ -353,9 +353,20 @@ const Popup = function() {
           if (callbacks) callbacks.call(contexts);
           _self.remove(popup.id);
           return false;
-        });
+        };
+        okBtn.addEventListener('pointerup', closeCallback);
         break;
     }
+
+    popup.addEventListener("keyup", event => {
+      if (event.isComposing || event.keyCode === 229) {
+        return;
+      }
+
+      if (event.key == "Escape") {
+        if (closeCallback !== undefined) closeCallback(event);
+      }
+    });
 
     this.el.appendChild(popup);
     this.el.style.display = 'flex';
