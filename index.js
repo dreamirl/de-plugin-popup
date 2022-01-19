@@ -168,7 +168,7 @@ const Popup = function() {
         break;
 
       // generate a button list
-      case 'custom': // TODO: add closeCallback
+      case 'custom':
         popup.getElementsByClassName('buttonsDefault')[0].style.display =
           'none';
         var buttons = popup.getElementsByClassName('buttonsCustom')[0];
@@ -365,11 +365,13 @@ const Popup = function() {
 
       if (event.key == "Escape") {
         if (closeCallback !== undefined) closeCallback(event);
+        closeCallback = undefined;
       }
     });
 
     DE.Inputs.on('keyUp', 'back', function() {
       if (closeCallback !== undefined) closeCallback();
+      closeCallback = undefined;
     });
 
     this.el.appendChild(popup);
