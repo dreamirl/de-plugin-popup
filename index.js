@@ -32,10 +32,15 @@ const Popup = function() {
 
   this.DEName = 'Popup';
   this.popups = {};
+  this.popupsOpeningOrder = [];
   this.nPopups = 0;
   this.el = null;
   this.template = null;
   this.inited = false;
+
+  this.onPopupBack = null;
+  this.onPopupConfirm = null;
+
   var _self = this;
 
   this.defaultSounds = {
@@ -68,6 +73,29 @@ const Popup = function() {
     domContainer.appendChild(this.el);
     this.inited = true;
     this.el.style.display = 'none';
+
+    DE.Inputs.on('keyDown', 'popupBack', () => this.onPopupBack());
+    DE.Inputs.on('keyDown', 'popupConfirm', () => this.onPopupConfirm());
+  };
+
+  this.onPopupBack = function() {
+    if (this.popupsOpeningOrder.length === 0) return;
+
+    let popupId = this.popupsOpeningOrder[this.popupsOpeningOrder.length - 1];
+
+    if (this.popups[popupId].backCallback) {
+      this.popups[popupId].backCallback();
+    }
+  };
+
+  this.onPopupConfirm = function() {
+    if (this.popupsOpeningOrder.length === 0) return;
+
+    let popupId = this.popupsOpeningOrder[this.popupsOpeningOrder.length - 1];
+
+    if (this.popups[popupId].confirmCallback) {
+      this.popups[popupId].confirmCallback();
+    }
   };
 
   /****
@@ -91,8 +119,6 @@ const Popup = function() {
     popup.id = 'popup' + id;
     popup.className = 'de-plugin-popup';
 
-    let closeCallback;
-
     switch (type) {
       case 'prompt':
         if (contexts && !contexts.yes)
@@ -108,9 +134,10 @@ const Popup = function() {
           dicoY = DE.Localization.get('yes');
         }
         yes.innerHTML = dicoY === 'yes' ? 'Yes' : dicoY;
-        yes.addEventListener('pointerup', function(e) {
-          e.stopPropagation();
-          e.stopPropagation();
+        popup.confirmCallback = function(e) {
+          if (e !== undefined) e.stopPropagation();
+          if (e !== undefined) e.preventDefault();
+
           if (
             callbacks.sound_yes ||
             callbacks.sound ||
@@ -132,16 +159,18 @@ const Popup = function() {
           }
           _self.remove(popup.id);
           return false;
-        });
+        };
+        yes.addEventListener('pointerup', popup.confirmCallback);
         var no = popup.getElementsByClassName('noPrompt')[0];
         var dicoN = DE.Localization.get('popup.no');
         if (dicoN == 'popup.no') {
           dicoN = DE.Localization.get('no');
         }
         no.innerHTML = dicoN === 'no' ? 'No' : dicoN;
-        closeCallback = function(e) {
+        popup.backCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
+
           if (
             callbacks.sound_no ||
             callbacks.sound ||
@@ -164,25 +193,26 @@ const Popup = function() {
           _self.remove(popup.id);
           return false;
         };
-        no.addEventListener('pointerup', closeCallback);
+        no.addEventListener('pointerup', popup.backCallback);
         break;
 
       // generate a button list
-      case 'custom':
+      case 'custom': // TODO: add closeCallback
         popup.getElementsByClassName('buttonsDefault')[0].style.display =
           'none';
         var buttons = popup.getElementsByClassName('buttonsCustom')[0];
         buttons.style.display = 'block';
         while (buttons.firstChild) buttons.removeChild(buttons.firstChild);
         for (var i in callbacks) {
-          if (i == 'sound' || i == 'closeCallbackElName') continue;
+          if (i == 'sound' || i == 'backCallbackElName' || i == 'confirmCallbackElName') continue;
           b = document.createElement('button');
           b.className = i;
           b.i = i;
           b.innerHTML = DE.Localization.get(i);
-          const bCallback = function(e) {
+          const callback = function(e) {
             if (e !== undefined) e.stopPropagation();
             if (e !== undefined) e.preventDefault();
+
             var target = e.target;
             while (target.tagName.toLowerCase() != 'button')
               target = target.parentElement;
@@ -192,8 +222,11 @@ const Popup = function() {
             if (closes.indexOf(target.i) != -1) _self.remove(popup.id);
             return false;
           };
-          if (i === callbacks.closeCallbackElName) closeCallback = bCallback;
-          b.addEventListener('pointerup', bCallback);
+
+          if (i === callbacks.backCallbackElName) popup.backCallback = callback;
+          if (i === callbacks.confirmCallbackElName) popup.confirmCallback = callback;
+
+          b.addEventListener('pointerup', callback);
 
           buttons.appendChild(b);
         }
@@ -219,9 +252,10 @@ const Popup = function() {
 
         var cancel = popup.getElementsByClassName('cancelTextfield')[0];
         cancel.innerHTML = DE.Localization.get('cancel');
-        closeCallback = function(e) {
+        popup.backCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
+
           if (
             callbacks.sound ||
             _self.defaultSounds.no ||
@@ -236,7 +270,7 @@ const Popup = function() {
           _self.remove(popup.id);
           return false;
         };
-        cancel.addEventListener('pointerup', closeCallback);
+        cancel.addEventListener('pointerup', popup.backCallback);
 
         var ok = popup.getElementsByClassName('okTextfield')[0];
         var dico = DE.Localization.get('popup.ok');
@@ -244,9 +278,10 @@ const Popup = function() {
           dico = DE.Localization.get('ok');
         }
         ok.innerHTML = dico === 'ok' ? 'Ok' : dico;
-        ok.addEventListener('pointerup', function(e) {
-          e.stopPropagation();
-          e.stopPropagation();
+        popup.confirmCallback = function(e) {
+          if (e !== undefined) e.stopPropagation();
+          if (e !== undefined) e.preventDefault();
+
           if (
             callbacks.sound ||
             _self.defaultSounds.ok ||
@@ -264,7 +299,8 @@ const Popup = function() {
             );
           _self.remove(popup.id);
           return false;
-        });
+        };
+        ok.addEventListener('pointerup', popup.confirmCallback);
         break;
 
       case 'textfield-password':
@@ -288,9 +324,10 @@ const Popup = function() {
 
         var cancel = popup.getElementsByClassName('cancelTextfield')[0];
         cancel.innerHTML = DE.Localization.get('cancel');
-        closeCallback = function(e) {
+        popup.backCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
+
           if (
             callbacks.sound ||
             _self.defaultSounds.no ||
@@ -305,7 +342,7 @@ const Popup = function() {
           _self.remove(popup.id);
           return false;
         };
-        cancel.addEventListener('pointerup', closeCallback);
+        cancel.addEventListener('pointerup', popup.backCallback);
 
         var ok = popup.getElementsByClassName('okTextfield')[0];
         var dico = DE.Localization.get('popup.ok');
@@ -313,9 +350,10 @@ const Popup = function() {
           dico = DE.Localization.get('ok');
         }
         ok.innerHTML = dico === 'ok' ? 'Ok' : dico;
-        ok.addEventListener('pointerup', function(e) {
-          e.stopPropagation();
-          e.preventDefault();
+        popup.confirmCallback = function(e) {
+          if (e !== undefined) e.stopPropagation();
+          if (e !== undefined) e.preventDefault();
+
           if (
             callbacks.sound ||
             _self.defaultSounds.ok ||
@@ -333,7 +371,8 @@ const Popup = function() {
             );
           _self.remove(popup.id);
           return false;
-        });
+        };
+        ok.addEventListener('pointerup', popup.confirmCallback);
         break;
 
       default:
@@ -342,9 +381,10 @@ const Popup = function() {
 
         var okBtn = popup.getElementsByClassName('okBtn')[0];
         okBtn.innerHTML = DE.Localization.get('ok');
-        closeCallback = function(e) {
+        popup.confirmCallback = popup.backCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
+
           // in this case, closes is the sound
           if (closes || _self.defaultSounds.ok || _self.defaultSounds.default)
             DE.Audio.fx.play(
@@ -354,31 +394,20 @@ const Popup = function() {
           _self.remove(popup.id);
           return false;
         };
-        okBtn.addEventListener('pointerup', closeCallback);
+        okBtn.addEventListener('pointerup', popup.backCallback);
         break;
     }
-
-    popup.addEventListener("keyup", event => {
-      if (event.isComposing || event.keyCode === 229) {
-        return;
-      }
-
-      if (event.key == "Escape") {
-        if (closeCallback !== undefined) closeCallback(event);
-        closeCallback = undefined;
-      }
-    });
-
-    DE.Inputs.on('keyUp', 'back', function() {
-      if (closeCallback !== undefined) closeCallback();
-      closeCallback = undefined;
-    });
 
     this.el.appendChild(popup);
     this.el.style.display = 'flex';
 
     this.popups[popup.id] = popup;
+    this.popupsOpeningOrder.push(popup.id);
     ++this.nPopups;
+
+    if (this.nPopups === 1) {
+      DE.Inputs.lockKeys(['popupBack', 'popupConfirm']);
+    }
 
     this.trigger('create', popup);
     return popup;
@@ -392,8 +421,11 @@ const Popup = function() {
     if (--this.nPopups == 0) {
       this.trigger('zeroPopups');
       this.el.style.display = 'none';
+
+      DE.Inputs.unlockKeys();
     }
     delete this.popups[id];
+    this.popupsOpeningOrder.splice(this.popupsOpeningOrder.indexOf(id), 1);
   };
 
   this.removeAll = function() {
