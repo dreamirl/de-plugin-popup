@@ -54,6 +54,9 @@ const Popup = function() {
     if (this.inited) return;
     params = params || {};
 
+    this.popupBackInput = params.popupBackInput ?? 'popupBack'
+    this.popupConfirmInput = params.popupConfirmInput ?? 'popupConfirm'
+
     let domContainer = document.getElementById(
       params.containerId || DEFAULT_DOM_CONTAINER_ID,
     );
@@ -74,8 +77,8 @@ const Popup = function() {
     this.inited = true;
     this.el.style.display = 'none';
 
-    DE.Inputs.on('keyDown', 'popupBack', () => this.onPopupBack());
-    DE.Inputs.on('keyDown', 'popupConfirm', () => this.onPopupConfirm());
+    DE.Inputs.on('keyDown', this.popupBackInput, () => this.onPopupBack());
+    DE.Inputs.on('keyDown', this.popupConfirmInput, () => this.onPopupConfirm());
   };
 
   this.onPopupBack = function() {
@@ -204,14 +207,14 @@ const Popup = function() {
         buttons.style.display = 'block';
         while (buttons.firstChild) buttons.removeChild(buttons.firstChild);
         for (var i in callbacks) {
-          if (i == 'sound' || i == 'backCallbackElName' || i == 'confirmCallbackElName') continue;
+          if (i == 'sound') continue;
           b = document.createElement('button');
           b.className = i;
           b.i = i;
           b.innerHTML = DE.Localization.get(i);
-          const callback = function(e) {
-            if (e !== undefined) e.stopPropagation();
-            if (e !== undefined) e.preventDefault();
+          b.addEventListener('pointerup', function(e) {
+            e.stopPropagation();
+            e.preventDefault();
 
             var target = e.target;
             while (target.tagName.toLowerCase() != 'button')
@@ -221,12 +224,7 @@ const Popup = function() {
             callbacks[target.i].call(contexts, e);
             if (closes.indexOf(target.i) != -1) _self.remove(popup.id);
             return false;
-          };
-
-          if (i === callbacks.backCallbackElName) popup.backCallback = callback;
-          if (i === callbacks.confirmCallbackElName) popup.confirmCallback = callback;
-
-          b.addEventListener('pointerup', callback);
+          });
 
           buttons.appendChild(b);
         }
@@ -406,7 +404,7 @@ const Popup = function() {
     ++this.nPopups;
 
     if (this.nPopups === 1) {
-      DE.Inputs.lockKeys(['popupBack', 'popupConfirm']);
+      DE.Inputs.lockKeys([this.popupBackInput, this.popupConfirmInput]);
     }
 
     this.trigger('create', popup);
