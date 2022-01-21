@@ -37,6 +37,9 @@ const Popup = function() {
   this.el = null;
   this.template = null;
   this.inited = false;
+  
+  this.popupBackInput = ''
+  this.popupConfirmInput = ''
 
   this.onPopupBack = null;
   this.onPopupConfirm = null;
@@ -200,7 +203,7 @@ const Popup = function() {
         break;
 
       // generate a button list
-      case 'custom': // TODO: add closeCallback
+      case 'custom': // TODO: add closeCallback https://github.com/dreamirl/de-plugin-popup/pull/2/files#r788999227
         popup.getElementsByClassName('buttonsDefault')[0].style.display =
           'none';
         var buttons = popup.getElementsByClassName('buttonsCustom')[0];
