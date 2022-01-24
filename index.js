@@ -37,9 +37,10 @@ const Popup = function() {
   this.el = null;
   this.template = null;
   this.inited = false;
-  
-  this.popupBackInput = ''
-  this.popupConfirmInput = ''
+  this.waitKeyUpForUnlockingInput = false;
+
+  this.popupBackInput = '';
+  this.popupConfirmInput = '';
 
   this.onPopupBack = null;
   this.onPopupConfirm = null;
@@ -82,6 +83,19 @@ const Popup = function() {
 
     DE.Inputs.on('keyDown', this.popupBackInput, () => this.onPopupBack());
     DE.Inputs.on('keyDown', this.popupConfirmInput, () => this.onPopupConfirm());
+
+    DE.Inputs.on('keyUp', this.popupBackInput, () => {
+      if (this.waitKeyUpForUnlockingInput) {
+        this.waitKeyUpForUnlockingInput = false;
+        DE.Inputs.unlockKeys();
+      }
+    });
+    DE.Inputs.on('keyUp', this.popupConfirmInput, () => {
+      if (this.waitKeyUpForUnlockingInput) {
+        this.waitKeyUpForUnlockingInput = false;
+        DE.Inputs.unlockKeys();
+      }
+    });
   };
 
   this.onPopupBack = function() {
@@ -163,7 +177,7 @@ const Popup = function() {
               callbacks.yes();
             }
           }
-          _self.remove(popup.id);
+          _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
         };
         yes.addEventListener('pointerup', popup.confirmCallback);
@@ -196,7 +210,7 @@ const Popup = function() {
               callbacks.no();
             }
           }
-          _self.remove(popup.id);
+          _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
         };
         no.addEventListener('pointerup', popup.backCallback);
@@ -268,7 +282,7 @@ const Popup = function() {
               _self.defaultSounds.default,
             );
           if (callbacks.cancel) callbacks.cancel.call(contexts.cancel);
-          _self.remove(popup.id);
+          _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
         };
         cancel.addEventListener('pointerup', popup.backCallback);
@@ -298,7 +312,7 @@ const Popup = function() {
               contexts.ok,
               popup.getElementsByClassName('valueTextfield')[0].value,
             );
-          _self.remove(popup.id);
+          _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
         };
         ok.addEventListener('pointerup', popup.confirmCallback);
@@ -340,7 +354,7 @@ const Popup = function() {
               _self.defaultSounds.default,
             );
           if (callbacks.cancel) callbacks.cancel.call(contexts.cancel);
-          _self.remove(popup.id);
+          _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
         };
         cancel.addEventListener('pointerup', popup.backCallback);
@@ -370,7 +384,7 @@ const Popup = function() {
               contexts.ok,
               popup.getElementsByClassName('valueTextfield')[0].value,
             );
-          _self.remove(popup.id);
+          _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
         };
         ok.addEventListener('pointerup', popup.confirmCallback);
@@ -392,7 +406,7 @@ const Popup = function() {
               closes || _self.defaultSounds.ok || _self.defaultSounds.default,
             );
           if (callbacks) callbacks.call(contexts);
-          _self.remove(popup.id);
+          _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
         };
         okBtn.addEventListener('pointerup', popup.backCallback);
@@ -414,16 +428,20 @@ const Popup = function() {
     return popup;
   };
 
-  this.remove = function(id) {
+  this.remove = function(id, inputType = 'mouse') {
     if (!this.popups[id]) return;
     this.el.removeChild(this.popups[id]);
     this.trigger('kill');
 
-    if (--this.nPopups == 0) {
+    if (--this.nPopups === 0) {
       this.trigger('zeroPopups');
       this.el.style.display = 'none';
 
-      DE.Inputs.unlockKeys();
+      if (inputType === 'key') {
+        this.waitKeyUpForUnlockingInput = true;
+      } else {
+        DE.Inputs.unlockKeys();
+      }
     }
     delete this.popups[id];
     this.popupsOpeningOrder.splice(this.popupsOpeningOrder.indexOf(id), 1);
