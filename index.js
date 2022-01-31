@@ -58,8 +58,8 @@ const Popup = function() {
     if (this.inited) return;
     params = params || {};
 
-    this.popupBackInput = params.popupBackInput ?? 'popupBack'
-    this.popupConfirmInput = params.popupConfirmInput ?? 'popupConfirm'
+    this.popupBackInput = params.popupBackInput ?? 'popupBack';
+    this.popupConfirmInput = params.popupConfirmInput ?? 'popupConfirm';
 
     let domContainer = document.getElementById(
       params.containerId || DEFAULT_DOM_CONTAINER_ID,
@@ -69,8 +69,8 @@ const Popup = function() {
     if (!domContainer) {
       throw new Error(
         "FATAL ERROR: Can't init Popups without an element -- " +
-        'selector:: ' +
-        params.containerId,
+          'selector:: ' +
+          params.containerId,
       );
     }
 
@@ -82,7 +82,9 @@ const Popup = function() {
     this.el.style.display = 'none';
 
     DE.Inputs.on('keyDown', this.popupBackInput, () => this.onPopupBack());
-    DE.Inputs.on('keyDown', this.popupConfirmInput, () => this.onPopupConfirm());
+    DE.Inputs.on('keyDown', this.popupConfirmInput, () =>
+      this.onPopupConfirm(),
+    );
 
     DE.Inputs.on('keyUp', this.popupBackInput, () => {
       if (this.waitKeyUpForUnlockingInput) {
@@ -166,9 +168,9 @@ const Popup = function() {
           )
             DE.Audio.fx.play(
               callbacks.sound_yes ||
-              callbacks.sound ||
-              _self.defaultSounds.yes ||
-              _self.defaultSounds.default,
+                callbacks.sound ||
+                _self.defaultSounds.yes ||
+                _self.defaultSounds.default,
             );
           if (callbacks.yes) {
             if (contexts.yes) {
@@ -199,9 +201,9 @@ const Popup = function() {
           )
             DE.Audio.fx.play(
               callbacks.sound_no ||
-              callbacks.sound ||
-              _self.defaultSounds.no ||
-              _self.defaultSounds.default,
+                callbacks.sound ||
+                _self.defaultSounds.no ||
+                _self.defaultSounds.default,
             );
           if (callbacks.no) {
             if (contexts.no) {
@@ -259,7 +261,9 @@ const Popup = function() {
           'block';
         popup.getElementsByClassName('buttonsTextfield')[0].style.display =
           'block';
-        popup.getElementsByClassName('valueTextfield')[0].setAttribute('maxlength', callbacks.maxlength || 20);
+        popup
+          .getElementsByClassName('valueTextfield')[0]
+          .setAttribute('maxlength', callbacks.maxlength || 20);
 
         setTimeout(() => {
           popup.getElementsByClassName('valueTextfield')[0].focus();
@@ -278,8 +282,8 @@ const Popup = function() {
           )
             DE.Audio.fx.play(
               callbacks.sound ||
-              _self.defaultSounds.no ||
-              _self.defaultSounds.default,
+                _self.defaultSounds.no ||
+                _self.defaultSounds.default,
             );
           if (callbacks.cancel) callbacks.cancel.call(contexts.cancel);
           _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
@@ -304,8 +308,8 @@ const Popup = function() {
           )
             DE.Audio.fx.play(
               callbacks.sound ||
-              _self.defaultSounds.ok ||
-              _self.defaultSounds.default,
+                _self.defaultSounds.ok ||
+                _self.defaultSounds.default,
             );
           if (callbacks.ok)
             callbacks.ok.call(
@@ -329,10 +333,16 @@ const Popup = function() {
           'block';
         popup.getElementsByClassName('buttonsTextfield')[0].style.display =
           'block';
-        popup.getElementsByClassName('valueTextfield')[0].setAttribute('maxlength', callbacks.maxlength || 20);
-        popup.getElementsByClassName('valueTextfield')[0].setAttribute('type', "password");
-        popup.getElementsByClassName('inputTextfield')[0].innerHTML += `<button onclick="const password = document.querySelector('.valueTextfield');password.setAttribute('type', password.getAttribute('type') === 'password' ? 'text' : 'password');"
-          id="togglePassword"  cursor: pointer;">Voir</button>`
+        popup
+          .getElementsByClassName('valueTextfield')[0]
+          .setAttribute('maxlength', callbacks.maxlength || 20);
+        popup
+          .getElementsByClassName('valueTextfield')[0]
+          .setAttribute('type', 'password');
+        popup.getElementsByClassName(
+          'inputTextfield',
+        )[0].innerHTML += `<button onclick="const password = document.querySelector('.valueTextfield');password.setAttribute('type', password.getAttribute('type') === 'password' ? 'text' : 'password');"
+          id="togglePassword"  cursor: pointer;">Voir</button>`;
         setTimeout(() => {
           popup.getElementsByClassName('valueTextfield')[0].focus();
         }, 250);
@@ -350,8 +360,8 @@ const Popup = function() {
           )
             DE.Audio.fx.play(
               callbacks.sound ||
-              _self.defaultSounds.no ||
-              _self.defaultSounds.default,
+                _self.defaultSounds.no ||
+                _self.defaultSounds.default,
             );
           if (callbacks.cancel) callbacks.cancel.call(contexts.cancel);
           _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
@@ -376,8 +386,8 @@ const Popup = function() {
           )
             DE.Audio.fx.play(
               callbacks.sound ||
-              _self.defaultSounds.ok ||
-              _self.defaultSounds.default,
+                _self.defaultSounds.ok ||
+                _self.defaultSounds.default,
             );
           if (callbacks.ok)
             callbacks.ok.call(
