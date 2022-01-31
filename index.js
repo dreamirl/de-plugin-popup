@@ -58,8 +58,8 @@ const Popup = function() {
     if (this.inited) return;
     params = params || {};
 
-    this.popupBackInput = params.popupBackInput ?? 'popupBack';
-    this.popupConfirmInput = params.popupConfirmInput ?? 'popupConfirm';
+    this.popupBackInput = params.popupBackInput || 'popupBack';
+    this.popupConfirmInput = params.popupConfirmInput || 'popupConfirm';
 
     let domContainer = document.getElementById(
       params.containerId || DEFAULT_DOM_CONTAINER_ID,
