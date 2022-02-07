@@ -141,6 +141,54 @@ const Popup = function() {
     popup.id = 'popup' + id;
     popup.className = 'de-plugin-popup';
 
+    let localizationPopupYesResponse = DE.Localization.get('popup.yes');
+    let localizationYesResponse = DE.Localization.get('yes');
+    let localizationPopupNoResponse = DE.Localization.get('popup.no');
+    let localizationNoResponse = DE.Localization.get('no');
+
+    let localizationPopupOkResponse = DE.Localization.get('popup.ok');
+    let localizationOkResponse = DE.Localization.get('ok');
+    let localizationPopupCancelResponse = DE.Localization.get('popup.cancel');
+    let localizationCancelResponse = DE.Localization.get('cancel');
+
+    let localizationPopupShowResponse = DE.Localization.get('popup.show');
+    let localizationShowResponse = DE.Localization.get('show');
+    let localizationPopupHideResponse = DE.Localization.get('popup.hide');
+    let localizationHideResponse = DE.Localization.get('hide');
+
+    let localizationYes = localizationPopupYesResponse !== "popup.yes"
+        ? localizationPopupYesResponse
+        : localizationYesResponse !== "yes"
+            ? localizationYesResponse
+            : "Yes";
+    let localizationNo = localizationPopupNoResponse !== "popup.no"
+        ? localizationPopupNoResponse
+        : localizationNoResponse !== "no"
+            ? localizationNoResponse
+            : "No";
+
+    let localizationOk = localizationPopupOkResponse !== "popup.ok"
+        ? localizationPopupOkResponse
+        : localizationOkResponse !== "ok"
+            ? localizationOkResponse
+            : "Ok";
+    let localizationCancel = localizationPopupCancelResponse !== "popup.cancel"
+        ? localizationPopupCancelResponse
+        : localizationCancelResponse !== "cancel"
+            ? localizationCancelResponse
+            : "Cancel";
+
+    let localizationShow = localizationPopupShowResponse !== "popup.show"
+        ? localizationPopupShowResponse
+        : localizationShowResponse !== "show"
+            ? localizationShowResponse
+            : "Show";
+    let localizationHide = localizationPopupHideResponse !== "popup.hide"
+        ? localizationPopupHideResponse
+        : localizationHideResponse !== "hide"
+            ? localizationHideResponse
+            : "Hide";
+
     switch (type) {
       case 'prompt':
         if (contexts && !contexts.yes)
@@ -151,11 +199,7 @@ const Popup = function() {
         popup.getElementsByClassName('buttonsPrompt')[0].style.display =
           'block';
         var yes = popup.getElementsByClassName('yesPrompt')[0];
-        var dicoY = DE.Localization.get('popup.yes');
-        if (dicoY == 'popup.yes') {
-          dicoY = DE.Localization.get('yes');
-        }
-        yes.innerHTML = dicoY === 'yes' ? 'Yes' : dicoY;
+        yes.innerHTML = localizationYes;
         popup.confirmCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
@@ -184,11 +228,7 @@ const Popup = function() {
         };
         yes.addEventListener('pointerup', popup.confirmCallback);
         var no = popup.getElementsByClassName('noPrompt')[0];
-        var dicoN = DE.Localization.get('popup.no');
-        if (dicoN == 'popup.no') {
-          dicoN = DE.Localization.get('no');
-        }
-        no.innerHTML = dicoN === 'no' ? 'No' : dicoN;
+        no.innerHTML = localizationNo;
         popup.backCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
@@ -226,8 +266,8 @@ const Popup = function() {
         buttons.style.display = 'block';
         while (buttons.firstChild) buttons.removeChild(buttons.firstChild);
         for (var i in callbacks) {
-          if (i == 'sound') continue;
-          b = document.createElement('button');
+          if (i === 'sound') continue;
+          let b = document.createElement('button');
           b.className = i;
           b.i = i;
           b.innerHTML = DE.Localization.get(i);
@@ -236,12 +276,12 @@ const Popup = function() {
             e.preventDefault();
 
             var target = e.target;
-            while (target.tagName.toLowerCase() != 'button')
+            while (target.tagName.toLowerCase() !== 'button')
               target = target.parentElement;
             if (callbacks.sound || _self.defaultSounds.default)
               DE.Audio.fx.play(callbacks.sound || _self.defaultSounds.default);
             callbacks[target.i].call(contexts, e);
-            if (closes.indexOf(target.i) != -1) _self.remove(popup.id);
+            if (closes.indexOf(target.i) !== -1) _self.remove(popup.id);
             return false;
           });
 
@@ -270,7 +310,7 @@ const Popup = function() {
         }, 250);
 
         var cancel = popup.getElementsByClassName('cancelTextfield')[0];
-        cancel.innerHTML = DE.Localization.get('cancel');
+        cancel.innerHTML = localizationCancel;
         popup.backCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
@@ -292,11 +332,7 @@ const Popup = function() {
         cancel.addEventListener('pointerup', popup.backCallback);
 
         var ok = popup.getElementsByClassName('okTextfield')[0];
-        var dico = DE.Localization.get('popup.ok');
-        if (dico == 'popup.ok') {
-          dico = DE.Localization.get('ok');
-        }
-        ok.innerHTML = dico === 'ok' ? 'Ok' : dico;
+        ok.innerHTML = localizationOk;
         popup.confirmCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
@@ -340,15 +376,15 @@ const Popup = function() {
           .getElementsByClassName('valueTextfield')[0]
           .setAttribute('type', 'password');
         popup.getElementsByClassName(
-          'inputTextfield',
-        )[0].innerHTML += `<button onclick="const password = document.querySelector('.valueTextfield');password.setAttribute('type', password.getAttribute('type') === 'password' ? 'text' : 'password');"
-          id="togglePassword"  cursor: pointer;">Voir</button>`;
+            'inputTextfield',
+        )[0].innerHTML += `<button onclick="const password = document.querySelector('.valueTextfield');const passwordVisibilityToggleButton = document.querySelector('#togglePassword');const newType = password.getAttribute('type') === 'password' ? 'text' : 'password';password.setAttribute('type', newType);passwordVisibilityToggleButton.innerHTML = newType === 'password' ? '${localizationShow}' : '${localizationHide}';"
+          id="togglePassword"  cursor: pointer;">${localizationShow}</button>`;
         setTimeout(() => {
           popup.getElementsByClassName('valueTextfield')[0].focus();
         }, 250);
 
         var cancel = popup.getElementsByClassName('cancelTextfield')[0];
-        cancel.innerHTML = DE.Localization.get('cancel');
+        cancel.innerHTML = localizationCancel;
         popup.backCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
@@ -370,11 +406,7 @@ const Popup = function() {
         cancel.addEventListener('pointerup', popup.backCallback);
 
         var ok = popup.getElementsByClassName('okTextfield')[0];
-        var dico = DE.Localization.get('popup.ok');
-        if (dico == 'popup.ok') {
-          dico = DE.Localization.get('ok');
-        }
-        ok.innerHTML = dico === 'ok' ? 'Ok' : dico;
+        ok.innerHTML = localizationOk;
         popup.confirmCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
@@ -405,7 +437,7 @@ const Popup = function() {
         if (!contexts) contexts = window;
 
         var okBtn = popup.getElementsByClassName('okBtn')[0];
-        okBtn.innerHTML = DE.Localization.get('ok');
+        okBtn.innerHTML = localizationOk;
         popup.confirmCallback = popup.backCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
