@@ -45,6 +45,8 @@ const Popup = function() {
   this.onPopupBack = null;
   this.onPopupConfirm = null;
 
+  this.localizations = null;
+
   var _self = this;
 
   this.defaultSounds = {
@@ -62,13 +64,13 @@ const Popup = function() {
     this.popupConfirmInput = params.popupConfirmInput || 'popupConfirm';
 
     let domContainer = document.getElementById(
-      params.containerId || DEFAULT_DOM_CONTAINER_ID,
+        params.containerId || DEFAULT_DOM_CONTAINER_ID,
     );
     this.template = params.template || TEMPLATE;
 
     if (!domContainer) {
       throw new Error(
-        "FATAL ERROR: Can't init Popups without an element -- " +
+          "FATAL ERROR: Can't init Popups without an element -- " +
           'selector:: ' +
           params.containerId,
       );
@@ -83,7 +85,7 @@ const Popup = function() {
 
     DE.Inputs.on('keyDown', this.popupBackInput, () => this.onPopupBack());
     DE.Inputs.on('keyDown', this.popupConfirmInput, () =>
-      this.onPopupConfirm(),
+        this.onPopupConfirm(),
     );
 
     DE.Inputs.on('keyUp', this.popupBackInput, () => {
@@ -141,33 +143,44 @@ const Popup = function() {
     popup.id = 'popup' + id;
     popup.className = 'de-plugin-popup';
 
+    if (this.localizations === null) {
+      this.localizations = [];
+
+      ["yes", "no", "ok", "cancel", "show", "hide"].forEach(key => {
+        let localizationPopupResponse = DE.Localization.get(`popup.${key}`);
+        let localizationResponse = DE.Localization.get(key);
+
+        this.localizations[key] = localizationPopupResponse !== `popup.${key}`
+            ? localizationPopupResponse
+            : localizationResponse !== key
+                ? localizationResponse
+                : key.charAt(0).toUpperCase() + key.slice(1);
+      });
+    }
+
     switch (type) {
       case 'prompt':
         if (contexts && !contexts.yes)
           contexts = { yes: contexts, no: contexts };
         if (!contexts) contexts = { yes: window, no: window };
         popup.getElementsByClassName('buttonsDefault')[0].style.display =
-          'none';
+            'none';
         popup.getElementsByClassName('buttonsPrompt')[0].style.display =
-          'block';
+            'block';
         var yes = popup.getElementsByClassName('yesPrompt')[0];
-        var dicoY = DE.Localization.get('popup.yes');
-        if (dicoY == 'popup.yes') {
-          dicoY = DE.Localization.get('yes');
-        }
-        yes.innerHTML = dicoY === 'yes' ? 'Yes' : dicoY;
+        yes.innerHTML = this.localizations.yes;
         popup.confirmCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           if (
-            callbacks.sound_yes ||
-            callbacks.sound ||
-            _self.defaultSounds.yes ||
-            _self.defaultSounds.default
+              callbacks.sound_yes ||
+              callbacks.sound ||
+              _self.defaultSounds.yes ||
+              _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-              callbacks.sound_yes ||
+                callbacks.sound_yes ||
                 callbacks.sound ||
                 _self.defaultSounds.yes ||
                 _self.defaultSounds.default,
@@ -184,23 +197,19 @@ const Popup = function() {
         };
         yes.addEventListener('pointerup', popup.confirmCallback);
         var no = popup.getElementsByClassName('noPrompt')[0];
-        var dicoN = DE.Localization.get('popup.no');
-        if (dicoN == 'popup.no') {
-          dicoN = DE.Localization.get('no');
-        }
-        no.innerHTML = dicoN === 'no' ? 'No' : dicoN;
+        no.innerHTML = this.localizations.no;
         popup.backCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           if (
-            callbacks.sound_no ||
-            callbacks.sound ||
-            _self.defaultSounds.no ||
-            _self.defaultSounds.default
+              callbacks.sound_no ||
+              callbacks.sound ||
+              _self.defaultSounds.no ||
+              _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-              callbacks.sound_no ||
+                callbacks.sound_no ||
                 callbacks.sound ||
                 _self.defaultSounds.no ||
                 _self.defaultSounds.default,
@@ -218,16 +227,16 @@ const Popup = function() {
         no.addEventListener('pointerup', popup.backCallback);
         break;
 
-      // generate a button list
+        // generate a button list
       case 'custom': // TODO: add closeCallback https://github.com/dreamirl/de-plugin-popup/pull/2/files#r788999227
         popup.getElementsByClassName('buttonsDefault')[0].style.display =
-          'none';
+            'none';
         var buttons = popup.getElementsByClassName('buttonsCustom')[0];
         buttons.style.display = 'block';
         while (buttons.firstChild) buttons.removeChild(buttons.firstChild);
         for (var i in callbacks) {
-          if (i == 'sound') continue;
-          b = document.createElement('button');
+          if (i === 'sound') continue;
+          let b = document.createElement('button');
           b.className = i;
           b.i = i;
           b.innerHTML = DE.Localization.get(i);
@@ -236,12 +245,12 @@ const Popup = function() {
             e.preventDefault();
 
             var target = e.target;
-            while (target.tagName.toLowerCase() != 'button')
+            while (target.tagName.toLowerCase() !== 'button')
               target = target.parentElement;
             if (callbacks.sound || _self.defaultSounds.default)
               DE.Audio.fx.play(callbacks.sound || _self.defaultSounds.default);
             callbacks[target.i].call(contexts, e);
-            if (closes.indexOf(target.i) != -1) _self.remove(popup.id);
+            if (closes.indexOf(target.i) !== -1) _self.remove(popup.id);
             return false;
           });
 
@@ -249,39 +258,39 @@ const Popup = function() {
         }
         break;
 
-      // generate a text field with cancel/ok buttons
+        // generate a text field with cancel/ok buttons
       case 'textfield':
         if (contexts && !contexts.ok)
           contexts = { ok: contexts, cancel: contexts };
         if (!contexts) contexts = { ok: window, cancel: window };
 
         popup.getElementsByClassName('buttonsDefault')[0].style.display =
-          'none';
+            'none';
         popup.getElementsByClassName('inputTextfield')[0].style.display =
-          'block';
+            'block';
         popup.getElementsByClassName('buttonsTextfield')[0].style.display =
-          'block';
+            'block';
         popup
-          .getElementsByClassName('valueTextfield')[0]
-          .setAttribute('maxlength', callbacks.maxlength || 20);
+            .getElementsByClassName('valueTextfield')[0]
+            .setAttribute('maxlength', callbacks.maxlength || 20);
 
         setTimeout(() => {
           popup.getElementsByClassName('valueTextfield')[0].focus();
         }, 250);
 
         var cancel = popup.getElementsByClassName('cancelTextfield')[0];
-        cancel.innerHTML = DE.Localization.get('cancel');
+        cancel.innerHTML = this.localizations.cancel;
         popup.backCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           if (
-            callbacks.sound ||
-            _self.defaultSounds.no ||
-            _self.defaultSounds.default
+              callbacks.sound ||
+              _self.defaultSounds.no ||
+              _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-              callbacks.sound ||
+                callbacks.sound ||
                 _self.defaultSounds.no ||
                 _self.defaultSounds.default,
             );
@@ -292,29 +301,25 @@ const Popup = function() {
         cancel.addEventListener('pointerup', popup.backCallback);
 
         var ok = popup.getElementsByClassName('okTextfield')[0];
-        var dico = DE.Localization.get('popup.ok');
-        if (dico == 'popup.ok') {
-          dico = DE.Localization.get('ok');
-        }
-        ok.innerHTML = dico === 'ok' ? 'Ok' : dico;
+        ok.innerHTML = this.localizations.ok;
         popup.confirmCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           if (
-            callbacks.sound ||
-            _self.defaultSounds.ok ||
-            _self.defaultSounds.default
+              callbacks.sound ||
+              _self.defaultSounds.ok ||
+              _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-              callbacks.sound ||
+                callbacks.sound ||
                 _self.defaultSounds.ok ||
                 _self.defaultSounds.default,
             );
           if (callbacks.ok)
             callbacks.ok.call(
-              contexts.ok,
-              popup.getElementsByClassName('valueTextfield')[0].value,
+                contexts.ok,
+                popup.getElementsByClassName('valueTextfield')[0].value,
             );
           _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
@@ -328,38 +333,38 @@ const Popup = function() {
         if (!contexts) contexts = { ok: window, cancel: window };
 
         popup.getElementsByClassName('buttonsDefault')[0].style.display =
-          'none';
+            'none';
         popup.getElementsByClassName('inputTextfield')[0].style.display =
-          'block';
+            'block';
         popup.getElementsByClassName('buttonsTextfield')[0].style.display =
-          'block';
+            'block';
         popup
-          .getElementsByClassName('valueTextfield')[0]
-          .setAttribute('maxlength', callbacks.maxlength || 20);
+            .getElementsByClassName('valueTextfield')[0]
+            .setAttribute('maxlength', callbacks.maxlength || 20);
         popup
-          .getElementsByClassName('valueTextfield')[0]
-          .setAttribute('type', 'password');
+            .getElementsByClassName('valueTextfield')[0]
+            .setAttribute('type', 'password');
         popup.getElementsByClassName(
-          'inputTextfield',
-        )[0].innerHTML += `<button onclick="const password = document.querySelector('.valueTextfield');password.setAttribute('type', password.getAttribute('type') === 'password' ? 'text' : 'password');"
-          id="togglePassword"  cursor: pointer;">Voir</button>`;
+            'inputTextfield',
+        )[0].innerHTML += `<button onclick="const password = document.querySelector('.valueTextfield');const passwordVisibilityToggleButton = document.querySelector('#togglePassword');const newType = password.getAttribute('type') === 'password' ? 'text' : 'password';password.setAttribute('type', newType);passwordVisibilityToggleButton.innerHTML = newType === 'password' ? '${this.localizations.show}' : '${this.localizations.hide}';"
+          id="togglePassword"  cursor: pointer;">${this.localizations.show}</button>`;
         setTimeout(() => {
           popup.getElementsByClassName('valueTextfield')[0].focus();
         }, 250);
 
         var cancel = popup.getElementsByClassName('cancelTextfield')[0];
-        cancel.innerHTML = DE.Localization.get('cancel');
+        cancel.innerHTML = this.localizations.cancel;
         popup.backCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           if (
-            callbacks.sound ||
-            _self.defaultSounds.no ||
-            _self.defaultSounds.default
+              callbacks.sound ||
+              _self.defaultSounds.no ||
+              _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-              callbacks.sound ||
+                callbacks.sound ||
                 _self.defaultSounds.no ||
                 _self.defaultSounds.default,
             );
@@ -370,29 +375,25 @@ const Popup = function() {
         cancel.addEventListener('pointerup', popup.backCallback);
 
         var ok = popup.getElementsByClassName('okTextfield')[0];
-        var dico = DE.Localization.get('popup.ok');
-        if (dico == 'popup.ok') {
-          dico = DE.Localization.get('ok');
-        }
-        ok.innerHTML = dico === 'ok' ? 'Ok' : dico;
+        ok.innerHTML = this.localizations.ok;
         popup.confirmCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           if (
-            callbacks.sound ||
-            _self.defaultSounds.ok ||
-            _self.defaultSounds.default
+              callbacks.sound ||
+              _self.defaultSounds.ok ||
+              _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-              callbacks.sound ||
+                callbacks.sound ||
                 _self.defaultSounds.ok ||
                 _self.defaultSounds.default,
             );
           if (callbacks.ok)
             callbacks.ok.call(
-              contexts.ok,
-              popup.getElementsByClassName('valueTextfield')[0].value,
+                contexts.ok,
+                popup.getElementsByClassName('valueTextfield')[0].value,
             );
           _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
@@ -405,7 +406,7 @@ const Popup = function() {
         if (!contexts) contexts = window;
 
         var okBtn = popup.getElementsByClassName('okBtn')[0];
-        okBtn.innerHTML = DE.Localization.get('ok');
+        okBtn.innerHTML = this.localizations.ok;
         popup.confirmCallback = popup.backCallback = function(e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
@@ -413,7 +414,7 @@ const Popup = function() {
           // in this case, closes is the sound
           if (closes || _self.defaultSounds.ok || _self.defaultSounds.default)
             DE.Audio.fx.play(
-              closes || _self.defaultSounds.ok || _self.defaultSounds.default,
+                closes || _self.defaultSounds.ok || _self.defaultSounds.default,
             );
           if (callbacks) callbacks.call(contexts);
           _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
