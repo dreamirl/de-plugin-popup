@@ -26,7 +26,7 @@ const TEMPLATE = `
 
 const DEFAULT_DOM_CONTAINER_ID = 'render';
 
-const Popup = function() {
+const Popup = function () {
   DE.Events.Emitter.call(this);
   this.trigger = this.emit;
 
@@ -56,7 +56,7 @@ const Popup = function() {
     default: undefined,
   };
 
-  this.init = function(params) {
+  this.init = function (params) {
     if (this.inited) return;
     params = params || {};
 
@@ -64,13 +64,13 @@ const Popup = function() {
     this.popupConfirmInput = params.popupConfirmInput || 'popupConfirm';
 
     let domContainer = document.getElementById(
-        params.containerId || DEFAULT_DOM_CONTAINER_ID,
+      params.containerId || DEFAULT_DOM_CONTAINER_ID,
     );
     this.template = params.template || TEMPLATE;
 
     if (!domContainer) {
       throw new Error(
-          "FATAL ERROR: Can't init Popups without an element -- " +
+        "FATAL ERROR: Can't init Popups without an element -- " +
           'selector:: ' +
           params.containerId,
       );
@@ -85,7 +85,7 @@ const Popup = function() {
 
     DE.Inputs.on('keyDown', this.popupBackInput, () => this.onPopupBack());
     DE.Inputs.on('keyDown', this.popupConfirmInput, () =>
-        this.onPopupConfirm(),
+      this.onPopupConfirm(),
     );
 
     DE.Inputs.on('keyUp', this.popupBackInput, () => {
@@ -102,7 +102,7 @@ const Popup = function() {
     });
   };
 
-  this.onPopupBack = function() {
+  this.onPopupBack = function () {
     if (this.popupsOpeningOrder.length === 0) return;
 
     let popupId = this.popupsOpeningOrder[this.popupsOpeningOrder.length - 1];
@@ -112,7 +112,7 @@ const Popup = function() {
     }
   };
 
-  this.onPopupConfirm = function() {
+  this.onPopupConfirm = function () {
     if (this.popupsOpeningOrder.length === 0) return;
 
     let popupId = this.popupsOpeningOrder[this.popupsOpeningOrder.length - 1];
@@ -128,7 +128,7 @@ const Popup = function() {
    if you use prompt type, callbacks and contexts args are objects with yes and no values
    if you use info (default), callbacks and contexts args are directly functions
    */
-  this.create = function(text, type, callbacks, contexts, closes) {
+  this.create = function (text, type, callbacks, contexts, closes) {
     if (!this.inited) return;
 
     var id = Date.now() + '-' + ((Math.random() * 100) >> 0);
@@ -146,15 +146,16 @@ const Popup = function() {
     if (this.localizations === null) {
       this.localizations = [];
 
-      ["yes", "no", "ok", "cancel", "show", "hide"].forEach(key => {
+      ['yes', 'no', 'ok', 'cancel', 'show', 'hide'].forEach((key) => {
         let localizationPopupResponse = DE.Localization.get(`popup.${key}`);
         let localizationResponse = DE.Localization.get(key);
 
-        this.localizations[key] = localizationPopupResponse !== `popup.${key}`
+        this.localizations[key] =
+          localizationPopupResponse !== `popup.${key}`
             ? localizationPopupResponse
             : localizationResponse !== key
-                ? localizationResponse
-                : key.charAt(0).toUpperCase() + key.slice(1);
+            ? localizationResponse
+            : key.charAt(0).toUpperCase() + key.slice(1);
       });
     }
 
@@ -164,23 +165,23 @@ const Popup = function() {
           contexts = { yes: contexts, no: contexts };
         if (!contexts) contexts = { yes: window, no: window };
         popup.getElementsByClassName('buttonsDefault')[0].style.display =
-            'none';
+          'none';
         popup.getElementsByClassName('buttonsPrompt')[0].style.display =
-            'block';
+          'block';
         var yes = popup.getElementsByClassName('yesPrompt')[0];
         yes.innerHTML = this.localizations.yes;
-        popup.confirmCallback = function(e) {
+        popup.confirmCallback = function (e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           if (
-              callbacks.sound_yes ||
-              callbacks.sound ||
-              _self.defaultSounds.yes ||
-              _self.defaultSounds.default
+            callbacks.sound_yes ||
+            callbacks.sound ||
+            _self.defaultSounds.yes ||
+            _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-                callbacks.sound_yes ||
+              callbacks.sound_yes ||
                 callbacks.sound ||
                 _self.defaultSounds.yes ||
                 _self.defaultSounds.default,
@@ -198,18 +199,18 @@ const Popup = function() {
         yes.addEventListener('pointerup', popup.confirmCallback);
         var no = popup.getElementsByClassName('noPrompt')[0];
         no.innerHTML = this.localizations.no;
-        popup.backCallback = function(e) {
+        popup.backCallback = function (e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           if (
-              callbacks.sound_no ||
-              callbacks.sound ||
-              _self.defaultSounds.no ||
-              _self.defaultSounds.default
+            callbacks.sound_no ||
+            callbacks.sound ||
+            _self.defaultSounds.no ||
+            _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-                callbacks.sound_no ||
+              callbacks.sound_no ||
                 callbacks.sound ||
                 _self.defaultSounds.no ||
                 _self.defaultSounds.default,
@@ -227,10 +228,10 @@ const Popup = function() {
         no.addEventListener('pointerup', popup.backCallback);
         break;
 
-        // generate a button list
+      // generate a button list
       case 'custom': // TODO: add closeCallback https://github.com/dreamirl/de-plugin-popup/pull/2/files#r788999227
         popup.getElementsByClassName('buttonsDefault')[0].style.display =
-            'none';
+          'none';
         var buttons = popup.getElementsByClassName('buttonsCustom')[0];
         buttons.style.display = 'block';
         while (buttons.firstChild) buttons.removeChild(buttons.firstChild);
@@ -240,7 +241,7 @@ const Popup = function() {
           b.className = i;
           b.i = i;
           b.innerHTML = DE.Localization.get(i);
-          b.addEventListener('pointerup', function(e) {
+          b.addEventListener('pointerup', function (e) {
             e.stopPropagation();
             e.preventDefault();
 
@@ -258,21 +259,21 @@ const Popup = function() {
         }
         break;
 
-        // generate a text field with cancel/ok buttons
+      // generate a text field with cancel/ok buttons
       case 'textfield':
         if (contexts && !contexts.ok)
           contexts = { ok: contexts, cancel: contexts };
         if (!contexts) contexts = { ok: window, cancel: window };
 
         popup.getElementsByClassName('buttonsDefault')[0].style.display =
-            'none';
+          'none';
         popup.getElementsByClassName('inputTextfield')[0].style.display =
-            'block';
+          'block';
         popup.getElementsByClassName('buttonsTextfield')[0].style.display =
-            'block';
+          'block';
         popup
-            .getElementsByClassName('valueTextfield')[0]
-            .setAttribute('maxlength', callbacks.maxlength || 20);
+          .getElementsByClassName('valueTextfield')[0]
+          .setAttribute('maxlength', callbacks.maxlength || 20);
 
         setTimeout(() => {
           popup.getElementsByClassName('valueTextfield')[0].focus();
@@ -280,17 +281,17 @@ const Popup = function() {
 
         var cancel = popup.getElementsByClassName('cancelTextfield')[0];
         cancel.innerHTML = this.localizations.cancel;
-        popup.backCallback = function(e) {
+        popup.backCallback = function (e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           if (
-              callbacks.sound ||
-              _self.defaultSounds.no ||
-              _self.defaultSounds.default
+            callbacks.sound ||
+            _self.defaultSounds.no ||
+            _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-                callbacks.sound ||
+              callbacks.sound ||
                 _self.defaultSounds.no ||
                 _self.defaultSounds.default,
             );
@@ -302,24 +303,24 @@ const Popup = function() {
 
         var ok = popup.getElementsByClassName('okTextfield')[0];
         ok.innerHTML = this.localizations.ok;
-        popup.confirmCallback = function(e) {
+        popup.confirmCallback = function (e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           if (
-              callbacks.sound ||
-              _self.defaultSounds.ok ||
-              _self.defaultSounds.default
+            callbacks.sound ||
+            _self.defaultSounds.ok ||
+            _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-                callbacks.sound ||
+              callbacks.sound ||
                 _self.defaultSounds.ok ||
                 _self.defaultSounds.default,
             );
           if (callbacks.ok)
             callbacks.ok.call(
-                contexts.ok,
-                popup.getElementsByClassName('valueTextfield')[0].value,
+              contexts.ok,
+              popup.getElementsByClassName('valueTextfield')[0].value,
             );
           _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
@@ -333,19 +334,19 @@ const Popup = function() {
         if (!contexts) contexts = { ok: window, cancel: window };
 
         popup.getElementsByClassName('buttonsDefault')[0].style.display =
-            'none';
+          'none';
         popup.getElementsByClassName('inputTextfield')[0].style.display =
-            'block';
+          'block';
         popup.getElementsByClassName('buttonsTextfield')[0].style.display =
-            'block';
+          'block';
         popup
-            .getElementsByClassName('valueTextfield')[0]
-            .setAttribute('maxlength', callbacks.maxlength || 20);
+          .getElementsByClassName('valueTextfield')[0]
+          .setAttribute('maxlength', callbacks.maxlength || 20);
         popup
-            .getElementsByClassName('valueTextfield')[0]
-            .setAttribute('type', 'password');
+          .getElementsByClassName('valueTextfield')[0]
+          .setAttribute('type', 'password');
         popup.getElementsByClassName(
-            'inputTextfield',
+          'inputTextfield',
         )[0].innerHTML += `<button onclick="const password = document.querySelector('.valueTextfield');const passwordVisibilityToggleButton = document.querySelector('#togglePassword');const newType = password.getAttribute('type') === 'password' ? 'text' : 'password';password.setAttribute('type', newType);passwordVisibilityToggleButton.innerHTML = newType === 'password' ? '${this.localizations.show}' : '${this.localizations.hide}';"
           id="togglePassword"  cursor: pointer;">${this.localizations.show}</button>`;
         setTimeout(() => {
@@ -354,17 +355,17 @@ const Popup = function() {
 
         var cancel = popup.getElementsByClassName('cancelTextfield')[0];
         cancel.innerHTML = this.localizations.cancel;
-        popup.backCallback = function(e) {
+        popup.backCallback = function (e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           if (
-              callbacks.sound ||
-              _self.defaultSounds.no ||
-              _self.defaultSounds.default
+            callbacks.sound ||
+            _self.defaultSounds.no ||
+            _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-                callbacks.sound ||
+              callbacks.sound ||
                 _self.defaultSounds.no ||
                 _self.defaultSounds.default,
             );
@@ -376,24 +377,24 @@ const Popup = function() {
 
         var ok = popup.getElementsByClassName('okTextfield')[0];
         ok.innerHTML = this.localizations.ok;
-        popup.confirmCallback = function(e) {
+        popup.confirmCallback = function (e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           if (
-              callbacks.sound ||
-              _self.defaultSounds.ok ||
-              _self.defaultSounds.default
+            callbacks.sound ||
+            _self.defaultSounds.ok ||
+            _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-                callbacks.sound ||
+              callbacks.sound ||
                 _self.defaultSounds.ok ||
                 _self.defaultSounds.default,
             );
           if (callbacks.ok)
             callbacks.ok.call(
-                contexts.ok,
-                popup.getElementsByClassName('valueTextfield')[0].value,
+              contexts.ok,
+              popup.getElementsByClassName('valueTextfield')[0].value,
             );
           _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
@@ -407,14 +408,14 @@ const Popup = function() {
 
         var okBtn = popup.getElementsByClassName('okBtn')[0];
         okBtn.innerHTML = this.localizations.ok;
-        popup.confirmCallback = popup.backCallback = function(e) {
+        popup.confirmCallback = popup.backCallback = function (e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
 
           // in this case, closes is the sound
           if (closes || _self.defaultSounds.ok || _self.defaultSounds.default)
             DE.Audio.fx.play(
-                closes || _self.defaultSounds.ok || _self.defaultSounds.default,
+              closes || _self.defaultSounds.ok || _self.defaultSounds.default,
             );
           if (callbacks) callbacks.call(contexts);
           _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
@@ -439,7 +440,7 @@ const Popup = function() {
     return popup;
   };
 
-  this.remove = function(id, inputType = 'mouse') {
+  this.remove = function (id, inputType = 'mouse') {
     if (!this.popups[id]) return;
     this.el.removeChild(this.popups[id]);
     this.trigger('kill');
@@ -458,7 +459,7 @@ const Popup = function() {
     this.popupsOpeningOrder.splice(this.popupsOpeningOrder.indexOf(id), 1);
   };
 
-  this.removeAll = function() {
+  this.removeAll = function () {
     for (var i in this.popups) {
       this.remove(i);
     }
