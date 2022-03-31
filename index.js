@@ -107,8 +107,10 @@ const Popup = function () {
 
     let popupId = this.popupsOpeningOrder[this.popupsOpeningOrder.length - 1];
 
-    if (this.popups[popupId].backCallback) {
-      this.popups[popupId].backCallback();
+    if(this.popups[popupId].type != 'default' || this.popups[popupId].canStop){
+      if (this.popups[popupId].backCallback) {
+        this.popups[popupId].backCallback();
+      }
     }
   };
 
@@ -116,9 +118,10 @@ const Popup = function () {
     if (this.popupsOpeningOrder.length === 0) return;
 
     let popupId = this.popupsOpeningOrder[this.popupsOpeningOrder.length - 1];
-
-    if (this.popups[popupId].confirmCallback) {
-      this.popups[popupId].confirmCallback();
+    if(this.popups[popupId].type != 'default' || this.popups[popupId].canStop){
+      if (this.popups[popupId].confirmCallback) {
+        this.popups[popupId].confirmCallback();
+      }
     }
   };
 
@@ -128,7 +131,7 @@ const Popup = function () {
    if you use prompt type, callbacks and contexts args are objects with yes and no values
    if you use info (default), callbacks and contexts args are directly functions
    */
-  this.create = function (text, type, callbacks, contexts, closes) {
+  this.create = function (text, type, callbacks, contexts, closes, args) {
     if (!this.inited) return;
 
     var id = Date.now() + '-' + ((Math.random() * 100) >> 0);
@@ -142,6 +145,7 @@ const Popup = function () {
     popup.getElementsByClassName('buttonsCustom')[0].style.display = 'none';
     popup.id = 'popup' + id;
     popup.className = 'de-plugin-popup';
+    popup.type = type;
 
     if (this.localizations === null) {
       this.localizations = [];
@@ -406,8 +410,22 @@ const Popup = function () {
         // default is information with button ok
         if (!contexts) contexts = window;
 
+        popup.type = 'default';
+
         var okBtn = popup.getElementsByClassName('okBtn')[0];
         okBtn.innerHTML = this.localizations.ok;
+
+        popup.canStop = true;
+        if (args.TimeBeforeAcceptance) {
+          popup.canStop = false;
+          okBtn.style.display='none';
+          setTimeout(
+            function() {
+              okBtn.style.display='block';
+              popup.canStop = true;
+            }, args.TimeBeforeAcceptance);
+        }
+
         popup.confirmCallback = popup.backCallback = function (e) {
           if (e !== undefined) e.stopPropagation();
           if (e !== undefined) e.preventDefault();
