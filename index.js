@@ -107,7 +107,10 @@ const Popup = function () {
 
     let popupId = this.popupsOpeningOrder[this.popupsOpeningOrder.length - 1];
 
-    if(this.popups[popupId].type != 'default' || this.popups[popupId].canStop){
+    if (
+      this.popups[popupId].type != 'default' ||
+      this.popups[popupId].canStop
+    ) {
       if (this.popups[popupId].backCallback) {
         this.popups[popupId].backCallback();
       }
@@ -118,7 +121,10 @@ const Popup = function () {
     if (this.popupsOpeningOrder.length === 0) return;
 
     let popupId = this.popupsOpeningOrder[this.popupsOpeningOrder.length - 1];
-    if(this.popups[popupId].type != 'default' || this.popups[popupId].canStop){
+    if (
+      this.popups[popupId].type != 'default' ||
+      this.popups[popupId].canStop
+    ) {
       if (this.popups[popupId].confirmCallback) {
         this.popups[popupId].confirmCallback();
       }
@@ -418,12 +424,11 @@ const Popup = function () {
         popup.canStop = true;
         if (args.TimeBeforeAcceptance) {
           popup.canStop = false;
-          okBtn.style.display='none';
-          setTimeout(
-            function() {
-              okBtn.style.display='block';
-              popup.canStop = true;
-            }, args.TimeBeforeAcceptance);
+          okBtn.style.display = 'none';
+          setTimeout(function () {
+            okBtn.style.display = 'block';
+            popup.canStop = true;
+          }, args.TimeBeforeAcceptance);
         }
 
         popup.confirmCallback = popup.backCallback = function (e) {
