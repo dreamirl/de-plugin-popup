@@ -397,7 +397,7 @@ const Popup = function () {
             _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-              callbacks.sound ||
+              callbacks.sopopup.canStopund ||
                 _self.defaultSounds.ok ||
                 _self.defaultSounds.default,
             );
@@ -422,7 +422,8 @@ const Popup = function () {
         okBtn.innerHTML = this.localizations.ok;
 
         popup.canStop = true;
-        if (args.TimeBeforeAcceptance) {
+
+        if (args && args.TimeBeforeAcceptance) {
           popup.canStop = false;
           okBtn.style.display = 'none';
           setTimeout(function () {
