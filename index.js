@@ -397,7 +397,7 @@ const Popup = function () {
             _self.defaultSounds.default
           )
             DE.Audio.fx.play(
-              callbacks.sopopup.canStopund ||
+              callbacks.sound ||
                 _self.defaultSounds.ok ||
                 _self.defaultSounds.default,
             );
