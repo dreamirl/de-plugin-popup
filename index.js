@@ -189,13 +189,14 @@ const Popup = function () {
             callbacks.sound ||
             _self.defaultSounds.yes ||
             _self.defaultSounds.default
-          )
-            DE.Audio.fx.play(
+          ) {
+            (DE.Audio.fx ? DE.Audio.fx : DE.Audio).play(
               callbacks.sound_yes ||
                 callbacks.sound ||
                 _self.defaultSounds.yes ||
                 _self.defaultSounds.default,
             );
+          }
           if (callbacks.yes) {
             if (contexts.yes) {
               callbacks.yes.call(contexts.yes);
@@ -218,13 +219,14 @@ const Popup = function () {
             callbacks.sound ||
             _self.defaultSounds.no ||
             _self.defaultSounds.default
-          )
-            DE.Audio.fx.play(
+          ) {
+            (DE.Audio.fx ? DE.Audio.fx : DE.Audio).play(
               callbacks.sound_no ||
                 callbacks.sound ||
                 _self.defaultSounds.no ||
                 _self.defaultSounds.default,
             );
+          }
           if (callbacks.no) {
             if (contexts.no) {
               callbacks.no.call(contexts.no);
@@ -258,8 +260,9 @@ const Popup = function () {
             var target = e.target;
             while (target.tagName.toLowerCase() !== 'button')
               target = target.parentElement;
-            if (callbacks.sound || _self.defaultSounds.default)
-              DE.Audio.fx.play(callbacks.sound || _self.defaultSounds.default);
+            if (callbacks.sound || _self.defaultSounds.default) {
+              (DE.Audio.fx ? DE.Audio.fx : DE.Audio).play(callbacks.sound || _self.defaultSounds.default);
+            }
             callbacks[target.i].call(contexts, e);
             if (closes.indexOf(target.i) !== -1) _self.remove(popup.id);
             return false;
@@ -299,12 +302,13 @@ const Popup = function () {
             callbacks.sound ||
             _self.defaultSounds.no ||
             _self.defaultSounds.default
-          )
-            DE.Audio.fx.play(
+          ) {
+            (DE.Audio.fx ? DE.Audio.fx : DE.Audio).play(
               callbacks.sound ||
                 _self.defaultSounds.no ||
                 _self.defaultSounds.default,
             );
+          }
           if (callbacks.cancel) callbacks.cancel.call(contexts.cancel);
           _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
@@ -321,12 +325,13 @@ const Popup = function () {
             callbacks.sound ||
             _self.defaultSounds.ok ||
             _self.defaultSounds.default
-          )
-            DE.Audio.fx.play(
+          ) {
+            (DE.Audio.fx ? DE.Audio.fx : DE.Audio).play(
               callbacks.sound ||
                 _self.defaultSounds.ok ||
                 _self.defaultSounds.default,
             );
+          }
           if (callbacks.ok)
             callbacks.ok.call(
               contexts.ok,
@@ -373,12 +378,13 @@ const Popup = function () {
             callbacks.sound ||
             _self.defaultSounds.no ||
             _self.defaultSounds.default
-          )
-            DE.Audio.fx.play(
+          ) {
+            (DE.Audio.fx ? DE.Audio.fx : DE.Audio).play(
               callbacks.sound ||
                 _self.defaultSounds.no ||
                 _self.defaultSounds.default,
             );
+          }
           if (callbacks.cancel) callbacks.cancel.call(contexts.cancel);
           _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
@@ -395,12 +401,13 @@ const Popup = function () {
             callbacks.sound ||
             _self.defaultSounds.ok ||
             _self.defaultSounds.default
-          )
-            DE.Audio.fx.play(
+          ) {
+            (DE.Audio.fx ? DE.Audio.fx : DE.Audio).play(
               callbacks.sound ||
                 _self.defaultSounds.ok ||
                 _self.defaultSounds.default,
             );
+          }
           if (callbacks.ok)
             callbacks.ok.call(
               contexts.ok,
@@ -437,10 +444,11 @@ const Popup = function () {
           if (e !== undefined) e.preventDefault();
 
           // in this case, closes is the sound
-          if (closes || _self.defaultSounds.ok || _self.defaultSounds.default)
-            DE.Audio.fx.play(
+          if (closes || _self.defaultSounds.ok || _self.defaultSounds.default) {
+            (DE.Audio.fx ? DE.Audio.fx : DE.Audio).play(
               closes || _self.defaultSounds.ok || _self.defaultSounds.default,
             );
+          }
           if (callbacks) callbacks.call(contexts);
           _self.remove(popup.id, e !== undefined ? 'mouse' : 'key');
           return false;
